@@ -1,5 +1,7 @@
 # Model Card — Agente de Suporte Técnico Doméstico
 
+> **Status do documento:** quarta versão. A segunda fechou as lacunas L02 a L09, L12 e parte da L14 da auditoria inicial. A terceira atualizou o documento para a Parte 2 (grafo LangGraph, RAG, memória e aprovação humana). Esta alinha os números e as regras ao código final: 57 testes, dez casos reais, triagem de entrada incompleta em código e onze motivos de término (ver seção "Lacunas" ao final).
+
 Este documento descreve a finalidade, as capacidades, a autoridade, os dados tratados, os riscos e os controles do Agente de Suporte Técnico Doméstico. Cada afirmação verificável deve estar associada a uma evidência consultável no repositório ou em uma configuração externa. Quando não há evidência suficiente, o documento declara explicitamente uma lacuna.
 
 ## 1. Identificação
@@ -105,7 +107,7 @@ A existência dessas variáveis não comprova, por si só, os privilégios efeti
 
 - **Credencial:** a Groq não oferece escopo granular de chave no tier gratuito — a chave de API vale para a conta inteira, não para um recurso específico. Não há como restringir mais do que isso dentro do que o provedor oferece; o controle possível é operacional (rotacionar e revogar a chave se vazar), não técnico.
 - **Limite de gasto:** a conta é do tier gratuito, sem cartão cadastrado. A Groq só oferece teto de gasto configurável em planos pagos; sem forma de pagamento associada, não existe caminho para a execução gerar cobrança. Resta uma conferência manual de um minuto — confirmar em Settings → Billing que nenhum cartão foi adicionado — que ainda não foi feita por ninguém do grupo.
-- **Falha de controle:** interromper a execução e impedir novas ações até que a falha seja investigada. O grafo encerra e registra o motivo (`motivo_parada`) em dez situações (`docs/grafo.md` §5). Cobertos por teste: `limite_de_voltas`, `limite_de_ferramentas` (via teste de linha), `laco_detectado`, `tokens_esgotados`, `erro_fatal_llm`, `recursion_limit` e `aprovacao_expirada` (`tests/test_grafo.py`). Sem teste: `tempo_esgotado`.
+- **Falha de controle:** interromper a execução e impedir novas ações até que a falha seja investigada. O grafo encerra e registra o motivo (`motivo_parada`) em onze situações (`docs/grafo.md` §5). Cobertos por teste: `limite_de_voltas`, `limite_de_ferramentas` (via teste de linha), `laco_detectado`, `tokens_esgotados`, `erro_fatal_llm`, `recursion_limit` e `aprovacao_expirada` (`tests/test_grafo.py`). O limite de 25 passos é declarado em `src/config.py` porque o padrão do LangGraph 1.2.16 é 10007 (`docs/grafo.md` §4). `entrada_incompleta` é coberta por `test_entrada_sem_sintoma_pede_detalhes_sem_chamar_o_modelo`. Sem teste: `tempo_esgotado`.
 - **Suspensão:** LACUNA — definir quem pode interromper o processo e revogar a credencial utilizada. Depende de uma decisão do grupo sobre papéis, não de código.
 
 ## 4. Ferramentas e integrações
@@ -133,8 +135,6 @@ O agente utiliza ferramentas Python disponibilizadas pelo próprio projeto e um 
 **Servidores MCP:** confirmado por inspeção de `requirements.txt` — não há dependência de nenhum pacote MCP, e nenhuma ferramenta abre conexão de rede própria. Nenhum servidor MCP está configurado nesta entrega.
 
 **Permissões de escrita e envio a terceiros:** confirmado por inspeção de `src/tools.py`, `src/grafo.py` e `src/memoria.py` — `reiniciar_conexao` e `agendar_visita_tecnico` escrevem só em `dados/provedor.db`, e o código do sistema escreve em `dados/memoria.db`, `dados/checkpoints.db` e `logs/`, todos SQLite ou arquivos locais. Nenhuma ferramenta faz requisição de rede própria; o único tráfego de rede do sistema é a chamada ao provedor do modelo (Groq), feita pela biblioteca `openai` dentro de `src/llm.py`. Não há envio de dado a nenhum outro serviço de terceiro.
-
-**Observação de higiene encontrada nesta revisão:** o diretório de logs do repositório está nomeado `logs ` (com um espaço no final), não `logs`. Isso não afeta o `README.md` nem o model card, que já citam o caminho como `logs/`, mas faz `scripts/limpar_logs_antigos.py` e qualquer comando que use `logs/caso_<contrato>.json` literalmente não encontrar os arquivos até o diretório ser renomeado (`git mv "logs " logs`). Como esta sessão só tem leitura no repositório, a renomeação precisa ser feita por alguém do grupo.
 
 ## 5. Modelo e provedor
 
@@ -241,13 +241,13 @@ O projeto documenta cenários simulados para avaliar a capacidade do agente de d
 ### Resultados e reprodutibilidade
 
 - Quantidade total de casos documentados: cinco identificadores de cenário (`docs/case.md` §2.8) mais 19 casos do golden dataset de avaliação (`exercicios/Avaliação — Agente de Suporte Técnico Doméstico.md`, que cobre comportamento fim a fim incluindo o modelo).
-- Quantidade de execuções avaliadas: cinco execuções manuais da Parte 1 (`docs/modelos.md` §3), sete execuções reais da Parte 2 com logs em `logs/` (C001, C002, C999, C005, pergunta fora do manual e dois casos de C004 com aprovação) e 53 testes automatizados determinísticos (`tests/`), que não dependem do modelo.
-- Taxa agregada de sucesso: 53 de 53 nos testes automatizados (`python -m pytest tests -q`). Nas sete execuções reais da Parte 2, os comportamentos esperados apareceram em todas (reinício com reteste, manutenção sem agendar, contrato inexistente sem fonte, recusa pelo portão do RAG, agendamento só depois da aprovação). Isso ainda não é uma taxa estatística: é contagem sobre um conjunto pequeno e não repetido.
+- Quantidade de execuções avaliadas: cinco execuções manuais da Parte 1 (`docs/modelos.md` §3), dez casos reais da Parte 2 com logs em `logs/` (C001, C002, C999, C005, pergunta fora do manual, entrada incompleta, entrada ambígua, escalada para humano e duas execuções de C004 com aprovação editada, mais um log de terminal de C004; 11 logs em `docs/io.md`) e 57 testes automatizados determinísticos (`tests/`), que não dependem do modelo.
+- Taxa agregada de sucesso: 57 de 57 nos testes automatizados (`python -m pytest tests -q`). Nos casos reais da Parte 2, os comportamentos esperados apareceram (reinício com reteste, manutenção sem agendar, contrato inexistente sem fonte, recusa pelo portão do RAG, pedido de detalhes sem chamar o modelo, agendamento só depois da aprovação e segunda aprovação sem duplicar a visita). O experimento de `docs/experimento_frase.md` mostra que retirar uma frase do prompt não mudou o comportamento neste caso (N=5). Isso ainda não é uma taxa estatística: é contagem sobre um conjunto pequeno e não repetido.
 - Taxa de bloqueio correto de ações proibidas: 100% nos testes automatizados que cobrem ações proibidas (modelo sem a ferramenta de agendar, chamada indevida recusada, rejeitar, expirar e edição inválida sem agendar, proposta sem teste prévio, bairro em manutenção, reinício em falha física).
 - Resultados por cenário e por tipo de falha: `tests/test_grafo.py` (caminhos do grafo e guardas), `tests/test_limites_autoridade.py` (ferramentas e banco), `tests/test_rag.py` (recuperação, portão e documento revogado) e `tests/test_memoria.py` (escrita, contradição, decaimento e remoção).
 - Versão da suíte de avaliação: cada log de `logs/` grava o hash do commit (campo `commit`) e o modelo; citar esse hash ao reportar qualquer resultado.
 - Concordância entre o julgamento do modelo e a avaliação humana: tratado em `exercicios/Avaliação — Agente de Suporte Técnico Doméstico.md`, seção 3 (rubrica do juiz LLM, meta de 85% de concordância) — não é o mesmo assunto desta suíte determinística, que não usa juiz nenhum.
-- Testes automatizados de regressão: 53 testes (`python -m pytest tests -q`). Cobrem os limites que não dependem do modelo de linguagem, usando um modelo simulado (`src/llm.py::LLMSimulado`); não substituem os 19 casos do golden dataset da avaliação, que exercitam o modelo.
+- Testes automatizados de regressão: 57 testes (`python -m pytest tests -q`). Cobrem os limites que não dependem do modelo de linguagem, usando um modelo simulado (`src/llm.py::LLMSimulado`); não substituem os 19 casos do golden dataset da avaliação, que exercitam o modelo.
 
 Os cenários descritos não devem ser tratados como evidência de desempenho estatístico sem um protocolo de avaliação, critérios de sucesso e resultados registrados — o golden dataset de 19 casos é esse protocolo para o comportamento que depende do modelo; esta suíte é o equivalente para o que não depende.
 
@@ -311,7 +311,7 @@ Até que essas decisões sejam registradas, a aceitação de riscos permanece re
 
 **Afirmação**
 
-O grafo encaminha para atendimento humano as solicitações de cobrança, fatura, cancelamento ou pedido de atendente (nó `triagem`, sem chamar o modelo) e termina com transbordo quando um limite do orçamento é atingido (`docs/grafo.md` §5). A visita técnica exige aprovação humana pelo nó `aprovacao` (`docs/humano.md`).
+O grafo encaminha para atendimento humano as solicitações de cobrança, fatura, cancelamento ou pedido de atendente, e pede detalhes quando a mensagem não descreve um problema de conexão (nó `triagem`, sem chamar o modelo). Termina com transbordo quando um limite do orçamento é atingido (`docs/grafo.md` §5). A visita técnica exige aprovação humana pelo nó `aprovacao` (`docs/humano.md`).
 
 **Evidências**
 
@@ -322,6 +322,7 @@ O grafo encaminha para atendimento humano as solicitações de cobrança, fatura
 ### Regras de supervisão
 
 - **Solicitações fora do escopo:** encaminhar para atendimento humano (triagem por palavras-chave, sem chamar o modelo). Pedido de cobrança sem essas palavras chega ao agente, e o prompt e a política P02 ainda o desviam.
+- **Mensagem sem sintoma de conexão** (por exemplo, "oi"): a triagem, em código, devolve um pedido de detalhes e termina com `entrada_incompleta`, sem chamar o modelo e sem escalar. Uma regra só no prompt foi tentada antes e o modelo a ignorou.
 - **Atendimento sem solução:** encerrar o fluxo e encaminhar quando passar de 6 voltas, 8 chamadas de ferramenta, 12000 tokens ou 120 s, ou quando o mesmo pedido de ferramenta se repetir sem mudança.
 - **Agendamento de visita:** só depois da aprovação humana; o modelo não tem a ferramenta que agenda.
 - **Falha de ferramenta ou violação de limite:** interromper a ação e impedir a continuidade insegura.
@@ -332,18 +333,18 @@ O grafo encaminha para atendimento humano as solicitações de cobrança, fatura
 - O prazo de 900 s vale para a aprovação do cliente; não há prazo de resposta definido para o atendente humano que recebe a escalada.
 - Não há procedimento comprovado para suspender o agente durante uma execução.
 
-A correção proposta é documentar o fluxo de escalada, definir responsáveis e prazos e implementar testes que demonstrem o comportamento esperado.
-
 A correção proposta é definir responsáveis e prazos para a escalada e o procedimento de suspensão.
+
+## 11. Registros de execução
 
 **Afirmação**
 
-O README descreve arquivos de registro no formato `logs/caso_<contrato>.json`. Esses registros podem conter a trajetória da execução, chamadas de ferramentas, argumentos, resultados e a resposta final apresentada ao cliente.
+O README descreve arquivos de registro em `logs/` (`caso_<contrato>.json`, ou o rótulo dado por `--rotulo`). Esses registros podem conter a trajetória da execução, chamadas de ferramentas, argumentos, resultados e a resposta final apresentada ao cliente.
 
 **Evidências**
 
 - `README.md`: descrição dos arquivos de log e exemplo de execução.
-- `src/agent.py`: implementação do registro de execução (`executar_atendimento`).
+- `src/agent.py`: implementação do registro de execução (`executar_atendimento`), com o campo `prompts` (arquivo e hash de cada prompt em uso).
 - `logs/`: registros gerados durante as execuções.
 
 ### Inventário dos registros
@@ -354,7 +355,7 @@ O README descreve arquivos de registro no formato `logs/caso_<contrato>.json`. E
 | Ferramentas chamadas | A trajetória das ferramentas é registrada. | Confirmado: `src/agent.py::executar_atendimento` grava a `trajetoria` do estado do grafo, com `nome`, `args` e `resultado` de cada chamada. |
 | Argumentos e resultados | O README informa que são registrados. | Confirmado (§6.2/§6.3): podem conter a mensagem do cliente, o contrato, o bairro e o resultado do teste de linha — nunca nome ou MAC. |
 | Resposta final | Registrada. | Confirmado: campo `saida` (`resultado`, `fontes`, `suficiente`, `motivo_parada`), igual ao texto mostrado ao cliente. |
-| Versão do modelo e do código | Gravada em cada registro. | Confirmado: os campos `modelo`, `temperature` e `commit` (hash curto do Git; vale `sem-git` quando a pasta não é um repositório) são gravados em cada execução. |
+| Versão do modelo e do código | Gravada em cada registro. | Confirmado: os campos `modelo`, `temperature`, `prompts` e `commit` (hash curto do Git; vale `sem-git` quando a pasta não é um repositório) são gravados em cada execução. |
 | Prazo de retenção | Não comprovado. | **Corrigido:** 30 dias, aplicado por `scripts/limpar_logs_antigos.py` (`python3 -m scripts.limpar_logs_antigos`), com `--simular` para conferir antes de apagar. Justificativa do prazo em `docs/modelos.md` §5. |
 | Controle de acesso | Não comprovado. | Documentado: o acesso aos logs é o mesmo acesso de leitura ao repositório Git — não existe controle adicional. Aceitável enquanto o dado for simulado; para dados reais, precisaria de um repositório ou pasta com controle de acesso próprio. |
 | Proteção contra alteração ou exclusão indevida | Não comprovada. | Ainda **LACUNA** — os logs ficam no sistema de arquivos sem controle de integridade (hash, assinatura) nem backup; qualquer um com acesso de escrita ao repositório pode alterá-los sem deixar rastro além do próprio histórico do Git. |
@@ -398,7 +399,7 @@ Esta seção reúne as pendências que impedem que um auditor confirme todas as 
 | L06 | Fluxo de dados pessoais não integralmente verificado. | Inspecionar uma execução e mapear entrada, contexto, ferramentas, provedor e logs. | Alta | **fechada** — §6.2/§6.3 mapeiam campo a campo, por inspeção do código; nome e MAC nunca saem do banco |
 | L07 | Prazos de retenção e descarte não definidos. | Criar política de retenção e procedimento de eliminação. | Alta | **fechada** — 30 dias, `scripts/limpar_logs_antigos.py` |
 | L08 | Controle de acesso aos registros não comprovado. | Definir permissões e verificar os acessos ao diretório de logs. | Alta | **fechada como documentação, não como controle técnico** — acesso aos logs é o mesmo acesso ao repositório Git; nenhum controle adicional existe |
-| L09 | Suíte automatizada e resultados agregados não comprovados. | Implementar testes reproduzíveis e publicar os resultados. | Alta | **fechada para os limites de autoridade** — 53 testes em `tests/`, `python -m pytest tests -q`; resultados estatísticos (muitas repetições) continuam fora do escopo desta suíte |
+| L09 | Suíte automatizada e resultados agregados não comprovados. | Implementar testes reproduzíveis e publicar os resultados. | Alta | **fechada para os limites de autoridade** — 57 testes em `tests/`, `python -m pytest tests -q`; resultados estatísticos (muitas repetições) continuam fora do escopo desta suíte |
 | L10 | Concordância entre avaliação do modelo e avaliação humana não medida. | Definir critérios de avaliação e comparar os julgamentos. | Média | aberta — tratada em `exercicios/Avaliação — Agente de Suporte Técnico Doméstico.md` §3, ainda não executada |
 | L11 | Aprovação humana e procedimento de suspensão não formalizados. | Definir responsáveis, prazos, critérios de escalada e mecanismo de interrupção. | Alta | **parcialmente fechada** — a aprovação humana da visita está implementada e testada (`docs/humano.md`); continuam abertos o responsável nominal, o prazo do atendente e o procedimento de suspensão, que dependem de decisão do grupo |
 | L12 | Inventário completo de ferramentas e permissões não consolidado. | Revisar cada função, seus efeitos e as permissões realmente necessárias. | Alta | **fechada** — §4, cinco ferramentas inventariadas uma a uma, com leitura/escrita e alcance de cada uma |
@@ -407,7 +408,7 @@ Esta seção reúne as pendências que impedem que um auditor confirme todas as 
 
 ## Conclusão: o agente está dentro de sua autoridade?
 
-A segunda versão fechou as lacunas de confirmação de agendamento, credenciais e gastos, dados pessoais e retenção, e testes automatizados. Esta versão leva o documento para a Parte 2: a confirmação virou estrutural (o modelo não tem a ferramenta que agenda e a visita depende de uma aprovação humana por `interrupt`), há saída validada com fontes verificadas, RAG com portão de suficiência, memória com remoção por titular verificada por outro programa, e 53 testes. Cada fechamento está amarrado a uma evidência verificável (código, teste, log com hash de commit ou documentação oficial do provedor).
+A segunda versão fechou as lacunas de confirmação de agendamento, credenciais e gastos, dados pessoais e retenção, e testes automatizados. Esta versão leva o documento ao estado final da Parte 2: a confirmação virou estrutural (o modelo não tem a ferramenta que agenda e a visita depende de uma aprovação humana por `interrupt`), a triagem de entrada incompleta é regra de código, há saída validada com fontes verificadas, RAG com portão de suficiência, memória com remoção por titular verificada por outro programa, e 57 testes. Cada fechamento está amarrado a uma evidência verificável (código, teste, log com hash de commit ou documentação oficial do provedor).
 
 Isso não esgota a auditoria. Continuam abertas lacunas que dependem de decisão do grupo, não de mais inspeção de código: quem são os responsáveis formais (L01), quem aprova mudanças (L13), quem responde às aprovações e escaladas e quem pode suspender o agente e revogar credenciais (L11), o uso de dados para treino pelo provedor, que a documentação pública da Groq não esclarece (L05, parte), a concordância entre o juiz LLM e a avaliação humana, que depende de rodar a suíte de `exercicios/Avaliação — Agente de Suporte Técnico Doméstico.md` (L10), e o teste das tentativas automáticas contra indisponibilidade do provedor e do limite de tempo (L14, parte).
 

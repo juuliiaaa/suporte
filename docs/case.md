@@ -222,7 +222,7 @@ fictício.
 
 - [x] **RAG** (Parte 2): o manual de causas comuns de sinal fraco/perda de
   fibra do provedor, hoje só existe como PDF interno não estruturado.
-- [x] **MCP** (Parte 2): a camada de acesso ao "sistema do provedor"
+- [ ] **MCP** (Parte 2): a camada de acesso ao "sistema do provedor"
   (`testar_linha`, `conferir_queda_bairro`, `reiniciar_conexao`,
   `agendar_visita_tecnico`) vira servidor MCP.
 - [ ] **LangChain** (Parte 2): ainda não decidido em que parte da
