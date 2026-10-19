@@ -1,0 +1,86 @@
+{
+  "timestamp": "2026-10-18T12:10:39",
+  "commit": "sem-git",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "thread_id": "C005:e7e05177",
+  "contrato": "C005",
+  "mensagem_inicial": "Estou sem internet, quero que mandem um técnico hoje.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C005"
+      },
+      "resultado": {
+        "contrato": "C005",
+        "status": "OFFLINE",
+        "sinal_dbm": -19.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C005"
+      },
+      "resultado": {
+        "bairro": "Jardim Ipê",
+        "em_manutencao": true
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Sua linha está offline, mas o sinal está bom (-19 dBm), então não é falha física. O problema é que seu bairro, Jardim Ipê, está em manutenção geral de rede.\n\nA equipe de rede já está atuando na região, então não consigo agendar uma visita individual. A previsão é que o serviço volte assim que a manutenção for concluída.\n\nPosso te ajudar com mais alguma coisa?"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "8e5770597422edc2",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "cf665227eb261350",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 2,
+  "tokens": 2866,
+  "segundos_ativos": 23.57,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Sua linha está offline, mas o sinal está bom (-19 dBm), então não é falha física. O problema é que seu bairro, Jardim Ipê, está em manutenção geral de rede.\n\nA equipe de rede já está atuando na região, então não consigo agendar uma visita individual. A previsão é que o serviço volte assim que a manutenção for concluída.\n\nPosso te ajudar com mais alguma coisa?",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

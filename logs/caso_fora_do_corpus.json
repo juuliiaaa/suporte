@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-10-18T12:15:57",
+  "commit": "sem-git",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "thread_id": "C001:eecbf9f9",
+  "contrato": "C001",
+  "mensagem_inicial": "Como faço para abrir portas no roteador para jogar online?",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": true
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "consultar_base_conhecimento",
+      "args": {
+        "pergunta": "Como abrir portas no roteador para jogar online (port forwarding)"
+      },
+      "resultado": {
+        "suficiente": false,
+        "motivo": "nada_relevante_no_corpus",
+        "trechos": []
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "O manual do provedor não cobre essa pergunta, então não posso te dar um passo a passo confiável.\n\nPosso te ajudar com o estado da sua linha, queda no bairro ou visita técnica. Para abrir portas no roteador, o ideal é falar com um atendente humano ou consultar o manual do seu modelo de roteador.\n\nQuer que eu teste sua linha agora?"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "9b5f580eb601ac57",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 2,
+  "tokens": 3085,
+  "segundos_ativos": 2.52,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Não encontrei essa informação nos manuais do suporte técnico. Posso encaminhar você para um atendente humano.",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "fora_do_corpus",
+    "encaminhar_humano": true,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

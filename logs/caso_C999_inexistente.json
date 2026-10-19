@@ -1,0 +1,75 @@
+{
+  "timestamp": "2026-10-18T12:10:15",
+  "commit": "sem-git",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "thread_id": "C999:cf9bbd9d",
+  "contrato": "C999",
+  "mensagem_inicial": "Minha internet caiu.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C999"
+      },
+      "resultado": {
+        "erro": "contrato_nao_encontrado",
+        "contrato": "C999"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C999"
+      },
+      "resultado": {
+        "erro": "contrato_nao_encontrado",
+        "contrato": "C999"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C999"
+      },
+      "resultado": {
+        "erro": "contrato_nao_encontrado",
+        "contrato": "C999"
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Infelizmente, o sistema não está conseguindo localizar o seu contrato (C999) para eu rodar os testes de linha e verificar a situação do bairro.\n\nIsso impede que eu diagnostique o problema agora. Para eu conseguir ajudar, preciso que o sistema reconheça o seu contrato.\n\nPosso te encaminhar para um atendente humano que consiga verificar a situação do contrato e resolver essa questão?"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": false,
+      "motivo": "contrato_inexistente"
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 4,
+  "tokens": 5791,
+  "segundos_ativos": 47.66,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Infelizmente, o sistema não está conseguindo localizar o seu contrato (C999) para eu rodar os testes de linha e verificar a situação do bairro.\n\nIsso impede que eu diagnostique o problema agora. Para eu conseguir ajudar, preciso que o sistema reconheça o seu contrato.\n\nPosso te encaminhar para um atendente humano que consiga verificar a situação do contrato e resolver essa questão?",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "sem_fonte",
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

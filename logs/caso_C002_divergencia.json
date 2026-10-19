@@ -1,0 +1,86 @@
+{
+  "timestamp": "2026-10-18T12:09:27",
+  "commit": "sem-git",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "thread_id": "C002:e9ab7cd0",
+  "contrato": "C002",
+  "mensagem_inicial": "Minha internet caiu, nada navega aqui em casa.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C002"
+      },
+      "resultado": {
+        "contrato": "C002",
+        "status": "ONLINE",
+        "sinal_dbm": -18.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C002"
+      },
+      "resultado": {
+        "bairro": "Jardim Ipê",
+        "em_manutencao": true
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "O teste da sua linha está normal (sinal -18 dBm, online), mas o bairro Jardim Ipê está em manutenção geral. A equipe de rede já está atuando na região, então não vou agendar visita individual.\n\nEnquanto isso, pode testar a navegação em outro aparelho (celular via Wi‑Fi, notebook) e me contar o resultado?"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "4ddd45171b1ac510",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "33c631ed84d58a8f",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 2,
+  "tokens": 2817,
+  "segundos_ativos": 12.45,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "O teste da sua linha está normal (sinal -18 dBm, online), mas o bairro Jardim Ipê está em manutenção geral. A equipe de rede já está atuando na região, então não vou agendar visita individual.\n\nEnquanto isso, pode testar a navegação em outro aparelho (celular via Wi‑Fi, notebook) e me contar o resultado?",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}
