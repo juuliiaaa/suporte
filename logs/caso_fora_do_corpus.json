@@ -1,9 +1,19 @@
 {
-  "timestamp": "2026-10-18T12:15:57",
-  "commit": "sem-git",
+  "timestamp": "2026-10-19T01:40:27",
+  "commit": "8b9fd3d",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
-  "thread_id": "C001:eecbf9f9",
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "8ff597289d95"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:003c0fce",
   "contrato": "C001",
   "mensagem_inicial": "Como faço para abrir portas no roteador para jogar online?",
   "trajetoria": [
@@ -19,7 +29,7 @@
       "tipo": "ferramenta",
       "nome": "consultar_base_conhecimento",
       "args": {
-        "pergunta": "Como abrir portas no roteador para jogar online (port forwarding)"
+        "pergunta": "Como abrir portas no roteador para jogar online?"
       },
       "resultado": {
         "suficiente": false,
@@ -29,14 +39,14 @@
     },
     {
       "tipo": "resposta_final",
-      "conteudo": "O manual do provedor não cobre essa pergunta, então não posso te dar um passo a passo confiável.\n\nPosso te ajudar com o estado da sua linha, queda no bairro ou visita técnica. Para abrir portas no roteador, o ideal é falar com um atendente humano ou consultar o manual do seu modelo de roteador.\n\nQuer que eu teste sua linha agora?"
+      "conteudo": "O manual do provedor não cobre essa pergunta, então não posso te dar um passo a passo confiável.\n\nPosso te ajudar com o estado da sua linha, queda no bairro ou visita técnica. Para abrir portas no roteador, o ideal é falar com um atendente humano ou consultar o manual do seu modelo específico de roteador.\n\nQuer que eu teste sua linha ou te encaminhe para um atendente?"
     },
     {
       "tipo": "memoria_gravada",
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "9b5f580eb601ac57",
+          "chave_idem": "20a41786cf1fef66",
           "ja_existia": false
         }
       }
@@ -44,8 +54,8 @@
   ],
   "pausas_de_aprovacao": [],
   "voltas": 2,
-  "tokens": 3085,
-  "segundos_ativos": 2.52,
+  "tokens": 3010,
+  "segundos_ativos": 24.65,
   "motivo_parada": "resposta_final",
   "saida": {
     "resultado": "Não encontrei essa informação nos manuais do suporte técnico. Posso encaminhar você para um atendente humano.",

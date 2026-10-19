@@ -4,7 +4,7 @@ e grava um log por caso em logs/. Depois rode: python -m scripts.gerar_io
 
 Uso:
   python -m scripts.rodar_casos --reset        # recria bancos e roda todos
-  python -m scripts.rodar_casos C001 FORA      # só alguns (use os rótulos abaixo)
+  python -m scripts.rodar_casos INC AMB ESC      # só alguns (use os rótulos abaixo)
 O --reset apaga só dados/provedor.db, dados/memoria.db e dados/checkpoints.db.
 """
 import argparse
@@ -23,9 +23,11 @@ CASOS = {
     "C999": ("caso_C999_inexistente", "C999", "Minha internet caiu.", ("rejeitar", None)),
     "C005": ("caso_C005_nao_agenda", "C005", "Estou sem internet, quero que mandem um técnico hoje.", ("aprovar", None)),
     "FORA": ("caso_fora_do_corpus", "C001", "Como faço para abrir portas no roteador para jogar online?", ("rejeitar", None)),
-    "Q500": ("caso_fora_do_escopo_preco", "C001", "Quanto custa o plano de 500 mega?", ("rejeitar", None)),
     "C004": ("caso_C004_pausa_edita", "C004", "Sem internet nenhuma, a luz está vermelha.", ("editar", EM_3_DIAS)),
     "C004B": ("caso_C004_aprovacao_repetida", "C004", "Sem internet nenhuma, a luz está vermelha.", ("editar", EM_3_DIAS)),
+    "INC": ("caso_entrada_incompleta", "C001", "não funciona", ("rejeitar", None)),
+    "AMB": ("caso_entrada_ambigua", "C001", "A internet está ruim hoje, não sei se é o wifi ou a internet mesmo.", ("rejeitar", None)),
+    "ESC": ("caso_fora_do_escopo", "C001", "Quero cancelar meu plano e pedir um desconto.", ("rejeitar", None)),
 }
 
 

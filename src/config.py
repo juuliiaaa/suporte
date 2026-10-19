@@ -36,9 +36,11 @@ TENTATIVAS_LLM = 3             # tentativas em erro recuperável (limite de taxa
 TETO_SEGUNDOS = 120            # tempo de parede do atendimento, sem contar a espera humana
 REPETICOES_PARA_LACO = 3       # mesma ferramenta com os mesmos argumentos N vezes = laço
 
-# Decisão que o framework esconderia como padrão (docs/grafo.md §6).
-# O padrão do LangGraph hoje é 25; declaramos 25 de propósito e tratamos o
-# estouro como um motivo de término nosso, não como exceção que derruba.
+# Decisão que o framework esconderia como padrão (docs/grafo.md §4).
+# No langgraph 1.2.16 o padrão é 10007 (langgraph/_internal/_config.py:32);
+# em versões anteriores era 25. Declaramos 25 de propósito: o caminho mais
+# longo legítimo gasta cerca de 19 passos. O estouro é um motivo de término
+# nosso (recursion_limit), não uma exceção que derruba.
 RECURSION_LIMIT = 25
 
 # Aprovação humana (docs/humano.md).

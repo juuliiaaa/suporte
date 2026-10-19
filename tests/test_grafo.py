@@ -129,13 +129,30 @@ def test_bairro_em_manutencao_nao_chega_na_aprovacao(checkpointer):
 
 
 def test_contrato_da_sessao_vence_o_que_o_modelo_digita(checkpointer):
-    r, _ = rodar("C001", "oi", [chamada("testar_linha", {"contrato": "C004"}), texto("ok")], checkpointer)
+    r, _ = rodar("C001", "sem internet", [chamada("testar_linha", {"contrato": "C004"}), texto("ok")], checkpointer)
     t = [x for x in r["trajetoria"] if x.get("nome") == "testar_linha"][0]
     assert t["resultado"]["contrato"] == "C001"
     assert t["contrato_sobrescrito"] == "C004"
 
 
 # -------------------------------------------------------- triagem e RAG
+
+@pytest.mark.parametrize("mensagem", ["oi", "não funciona", "preciso de ajuda"])
+def test_entrada_sem_sintoma_pede_detalhes_sem_chamar_o_modelo(checkpointer, mensagem):
+    r, simulado = rodar("C001", mensagem, [], checkpointer)
+    assert simulado.chamadas == 0
+    assert r["motivo_parada"] == "entrada_incompleta"
+    assert r["saida"]["suficiente"] is False
+    assert r["saida"]["encaminhar_humano"] is False
+    assert "luz do modem" in r["saida"]["resultado"]
+    assert visitas() == []
+
+
+def test_entrada_com_sintoma_segue_para_o_modelo(checkpointer):
+    r, simulado = rodar("C001", "a luz está vermelha", [texto("Vou verificar. [S01]")], checkpointer)
+    assert simulado.chamadas == 1
+    assert r["motivo_parada"] != "entrada_incompleta"
+
 
 def test_cobranca_vai_para_humano_sem_chamar_o_modelo(checkpointer):
     r, simulado = rodar("C001", "quero desconto na fatura", [], checkpointer)
@@ -145,8 +162,8 @@ def test_cobranca_vai_para_humano_sem_chamar_o_modelo(checkpointer):
 
 
 def test_pergunta_fora_do_corpus_recusa_em_codigo(checkpointer):
-    r, _ = rodar("C001", "quanto custa o plano de 500 mega", [
-        chamada("consultar_base_conhecimento", {"pergunta": "quanto custa o plano de 500 mega"}),
+    r, _ = rodar("C001", "quanto custa o plano de 500 mega de internet", [
+        chamada("consultar_base_conhecimento", {"pergunta": "quanto custa o plano de 500 mega de internet"}),
         texto("O plano de 500 mega custa R$ 99,90."),
     ], checkpointer)
     assert r["saida"]["suficiente"] is False
@@ -175,39 +192,39 @@ def test_citacao_inventada_e_detectada(checkpointer):
 # ------------------------------------------------------------- guardas
 
 def test_laco_e_detectado(checkpointer):
-    r, _ = rodar("C001", "oi", [chamada("conferir_queda_bairro")] * 4, checkpointer)
+    r, _ = rodar("C001", "sem internet", [chamada("conferir_queda_bairro")] * 4, checkpointer)
     assert r["motivo_parada"] == "laco_detectado"
     assert r["saida"]["encaminhar_humano"] is True
 
 
 def test_limite_de_voltas(checkpointer, monkeypatch):
     monkeypatch.setattr(config, "MAX_VOLTAS_AGENTE", 2)
-    r, _ = rodar("C001", "oi", [chamada("obter_data_atual"), chamada("conferir_queda_bairro"),
+    r, _ = rodar("C001", "sem internet", [chamada("obter_data_atual"), chamada("conferir_queda_bairro"),
                                 chamada("testar_linha")], checkpointer)
     assert r["motivo_parada"] == "limite_de_voltas"
 
 
 def test_limite_de_tokens(checkpointer, monkeypatch):
     monkeypatch.setattr(config, "TETO_TOKENS", 100)
-    r, _ = rodar("C001", "oi", [chamada("obter_data_atual", tokens=500), texto("x")], checkpointer)
+    r, _ = rodar("C001", "sem internet", [chamada("obter_data_atual", tokens=500), texto("x")], checkpointer)
     assert r["motivo_parada"] == "tokens_esgotados"
 
 
 def test_erro_fatal_do_modelo_encaminha_humano(checkpointer):
-    r, _ = rodar("C001", "oi", [llm.ErroLLMFatal("chave invalida")], checkpointer)
+    r, _ = rodar("C001", "sem internet", [llm.ErroLLMFatal("chave invalida")], checkpointer)
     assert r["motivo_parada"] == "erro_fatal_llm"
     assert r["saida"]["encaminhar_humano"] is True
 
 
 def test_recursion_limit_vira_motivo_de_termino(checkpointer, monkeypatch):
     monkeypatch.setattr(config, "RECURSION_LIMIT", 6)
-    r, _ = rodar("C001", "oi", [chamada("obter_data_atual"), chamada("conferir_queda_bairro"),
+    r, _ = rodar("C001", "sem internet", [chamada("obter_data_atual"), chamada("conferir_queda_bairro"),
                                 chamada("testar_linha"), texto("x")], checkpointer)
     assert r["motivo_parada"] == "recursion_limit"
 
 
 def test_log_e_gravado_com_campos_do_enunciado(checkpointer, tmp_path):
-    rodar("C001", "oi", [texto("Olá.")], checkpointer)
+    rodar("C001", "sem internet", [texto("Olá.")], checkpointer)
     import os
     caminho = os.path.join(config.PASTA_LOGS, "teste.json")
     log = json.load(open(caminho, encoding="utf-8"))
@@ -223,7 +240,7 @@ def test_limite_de_testes_de_linha(checkpointer):
         seq += [{"id": f"t{i}", "nome": "testar_linha", "args": {}},
                 {"id": f"r{i}", "nome": "reiniciar_conexao", "args": {}}]
     seq.append({"id": "t3", "nome": "testar_linha", "args": {}})
-    r, _ = rodar("C001", "oi", [llm.RespostaLLM(tool_calls=seq), texto("ok")], checkpointer)
+    r, _ = rodar("C001", "sem internet", [llm.RespostaLLM(tool_calls=seq), texto("ok")], checkpointer)
     testes = [t for t in r["trajetoria"] if t.get("nome") == "testar_linha"]
     assert len(testes) == 4
     assert testes[3]["resultado"]["erro"] == "limite_de_testes_atingido"

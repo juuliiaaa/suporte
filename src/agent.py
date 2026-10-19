@@ -11,6 +11,7 @@ Uso:
 """
 import argparse
 import datetime
+import hashlib
 import json
 import os
 import sqlite3
@@ -24,7 +25,7 @@ from langgraph.errors import GraphRecursionError
 from langgraph.types import Command
 
 from . import config, db
-from .grafo import construir_grafo
+from .grafo import obter_grafo
 from .llm import ClienteLLM
 
 
@@ -34,6 +35,17 @@ def _commit() -> str:
                               text=True, cwd=config.RAIZ, timeout=5).stdout.strip() or "sem-git"
     except Exception:
         return "sem-git"
+
+
+def prompts_em_uso() -> dict:
+    """Combinação de prompts desta execução (enunciado §2.2): arquivo e hash
+    do conteúdo, para comparar o comportamento de hoje com o de outra versão."""
+    usados = {}
+    for papel, nome in (("sistema", config.PROMPT_SISTEMA), ("procedural", config.PROMPT_PROCEDURAL)):
+        caminho = os.path.join(config.PASTA_PROMPTS, nome)
+        with open(caminho, "rb") as arquivo:
+            usados[papel] = {"arquivo": nome, "sha256": hashlib.sha256(arquivo.read()).hexdigest()[:12]}
+    return usados
 
 
 def decisor_terminal(payload: dict) -> dict:
@@ -83,7 +95,7 @@ def executar_atendimento(
         conexao = sqlite3.connect(config.CAMINHO_CHECKPOINTS, check_same_thread=False)
         checkpointer = SqliteSaver(conexao)
     try:
-        grafo = construir_grafo(llm, checkpointer)
+        grafo = obter_grafo(llm, checkpointer)
         thread_id = f"{contrato}:{uuid.uuid4().hex[:8]}"
         cfg = {"configurable": {"thread_id": thread_id}, "recursion_limit": config.RECURSION_LIMIT}
         entrada = {"thread_id": thread_id, "contrato": contrato, "mensagem": mensagem}
@@ -103,6 +115,7 @@ def executar_atendimento(
             "commit": _commit(),
             "modelo": getattr(llm, "modelo", config.MODELO),
             "temperature": config.TEMPERATURE,
+            "prompts": prompts_em_uso(),
             "thread_id": thread_id,
             "contrato": contrato,
             "mensagem_inicial": mensagem,

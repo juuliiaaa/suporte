@@ -37,8 +37,19 @@ PADRAO_HUMANO = re.compile(
     r"falar com (um |uma )?(atendente|pessoa|humano))\b"
 )
 
+PADRAO_SINTOMA = re.compile(
+    r"\b(internet|wi-?fi|net|sinal|luz|luzes|led|modem|roteador|router|caiu|caindo|cai|lent\w*|"
+    r"trav\w*|conexao|rede|fibra|cabo|offline|navega\w*|site|sites|video|videos|chamada|ping|"
+    r"velocidade|oscila\w*|instavel|queda|vermelh\w*|pisc\w*|laranja|verde|apagad\w*|"
+    r"tecnico|visita|equipamento|aparelho|aparelhos|celular|notebook|tv)\b"
+)
+TEXTO_PEDIR_DETALHES = (
+    "Não consegui entender qual é o problema. Para eu poder ajudar, me conte: o que a luz do modem mostra "
+    "(verde, vermelha, piscando ou apagada) e se a falha acontece em todos os aparelhos ou só em um."
+)
+
 TEXTOS_HUMANO = {
-    "encaminhado_humano": "Esse assunto (cobrança, fatura, contrato ou pedido de atendente) não é do suporte técnico. Vou encaminhar você para um atendente humano.",
+    "encaminhado_humano": "Esse assunto (cobrança, fatura, cancelamento ou pedido de atendente) não é do suporte técnico. Aqui eu testo a linha, confiro queda no bairro, reinicio a conexão e proponho visita técnica. Vou encaminhar você para um atendente humano.",
     "aprovacao_expirada": "Não recebi sua resposta sobre a visita técnica a tempo, então nada foi agendado. Vou encaminhar você para um atendente humano.",
 }
 TEXTO_HUMANO_PADRAO = "Não consegui concluir seu atendimento por aqui. Vou encaminhar você para um atendente humano, com o que já foi verificado."
@@ -86,6 +97,10 @@ def construir_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None)
         if PADRAO_HUMANO.search(texto):
             return {"rota": "humano", "motivo_parada": "encaminhado_humano",
                     "trajetoria": [{"tipo": "triagem", "rota": "humano", "regra": "palavra_chave"}]}
+        if not PADRAO_SINTOMA.search(texto):
+            return {"rota": "incompleta", "motivo_parada": "entrada_incompleta",
+                    "resposta_texto": TEXTO_PEDIR_DETALHES,
+                    "trajetoria": [{"tipo": "triagem", "rota": "incompleta", "regra": "sem_palavra_de_sintoma"}]}
         return {"rota": "suporte", "trajetoria": [{"tipo": "triagem", "rota": "suporte"}]}
 
     def _mensagens_para_o_modelo(estado):
@@ -274,7 +289,9 @@ def construir_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None)
         fontes += [Fonte(tipo="corpus", id=i, detalhe=recuperados[i]["doc"]) for i in validas]
 
         suficiente, motivo_insuf, encaminhar = True, None, False
-        if motivo != "resposta_final":
+        if motivo == "entrada_incompleta":
+            suficiente, motivo_insuf, encaminhar = False, motivo, False
+        elif motivo != "resposta_final":
             suficiente, motivo_insuf, encaminhar = False, motivo, True
         elif consultas and not recuperados and not fontes:
             suficiente, motivo_insuf, encaminhar = False, "fora_do_corpus", True
@@ -310,7 +327,7 @@ def construir_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None)
         return "encaminhar_humano" if estado.get("motivo_parada") else "carregar_memoria"
 
     def apos_triagem(estado):
-        return "encaminhar_humano" if estado["rota"] == "humano" else "agente"
+        return {"humano": "encaminhar_humano", "incompleta": "finalizar"}.get(estado["rota"], "agente")
 
     def apos_agente(estado):
         motivo = estado.get("motivo_parada")
@@ -339,7 +356,7 @@ def construir_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None)
     g.add_edge(START, "entrada")
     g.add_conditional_edges("entrada", apos_entrada, ["carregar_memoria", "encaminhar_humano"])
     g.add_edge("carregar_memoria", "triagem")
-    g.add_conditional_edges("triagem", apos_triagem, ["agente", "encaminhar_humano"])
+    g.add_conditional_edges("triagem", apos_triagem, ["agente", "encaminhar_humano", "finalizar"])
     g.add_conditional_edges("agente", apos_agente, ["ferramentas", "finalizar", "encaminhar_humano"])
     g.add_conditional_edges("ferramentas", apos_ferramentas, ["aprovacao", "agente", "encaminhar_humano"])
     g.add_edge("aprovacao", "agendar")
@@ -354,3 +371,17 @@ def _somar_dias(iso: str, dias: int) -> str:
     import datetime
 
     return (datetime.date.fromisoformat(iso) + datetime.timedelta(days=dias)).isoformat()
+
+
+_grafos = {}
+
+
+def obter_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None):
+    """Compila uma vez por combinação (modelo, checkpointer) e reaproveita nas
+    execuções seguintes do mesmo processo (enunciado §6.4: o grafo é compilado
+    uma vez, não remontado a cada execução). O cache guarda referências fortes
+    aos objetos, para que o id de um objeto já descartado não seja reutilizado."""
+    chave = (id(llm), id(checkpointer), id(indice))
+    if chave not in _grafos:
+        _grafos[chave] = (llm, checkpointer, indice, construir_grafo(llm, checkpointer, indice))
+    return _grafos[chave][3]
