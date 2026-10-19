@@ -34,8 +34,6 @@ def test_portao_barra_pergunta_fora_do_corpus():
 
 
 def test_revogado_contamina_quando_incluido():
-    """O experimento do enunciado §4.2: com o documento velho no índice, a
-    pergunta sobre prazo passa a trazer o trecho errado em primeiro lugar."""
     limpo = rag.construir_indice().buscar("qual o prazo máximo para agendar a visita técnica", k=1)
     sujo = rag.construir_indice(incluir_revogados=True).buscar("qual o prazo máximo para agendar a visita técnica", k=1)
     assert limpo[0]["trecho"].id == "P04"

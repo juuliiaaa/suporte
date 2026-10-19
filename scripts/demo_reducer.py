@@ -1,11 +1,3 @@
-"""
-Demonstra a regra de junção do estado (enunciado §3.1): dois nós em paralelo
-escrevendo o mesmo campo.
-  com reducer (operator.add): as duas escritas são preservadas
-  sem reducer: o LangGraph recusa (InvalidUpdateError), não perde dado em silêncio
-
-Uso: python -m scripts.demo_reducer
-"""
 import operator
 from typing import Annotated, List, TypedDict
 

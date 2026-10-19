@@ -1,9 +1,3 @@
-"""
-Aprovação repetida (enunciado §8.5): a mesma visita aprovada duas vezes
-produz uma linha só. Usa um banco temporário, não o provedor.db.
-
-Uso: python -m scripts.demo_idempotencia
-"""
 import os
 import tempfile
 

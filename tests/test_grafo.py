@@ -1,9 +1,3 @@
-"""
-Testes do grafo com modelo simulado (sem rede). Cobrem os caminhos do
-enunciado: feliz, aprovação (aprovar, rejeitar, editar, expirar), triagem
-para humano, recusa por RAG, laço, orçamento, erro fatal e a garantia
-estrutural de que o modelo não agenda sozinho.
-"""
 import json
 import sqlite3
 
@@ -39,8 +33,6 @@ def roteiro_visita(final):
         texto(final),
     ]
 
-
-# ------------------------------------------------------------------ caminhos
 
 def test_caminho_feliz_reinicia_e_confirma(checkpointer):
     r, _ = rodar("C001", "luz vermelha piscando", [
@@ -93,8 +85,6 @@ def test_aprovacao_repetida_nao_duplica(checkpointer):
     assert len(visitas()) == 1
 
 
-# --------------------------------------------------- garantias estruturais
-
 def test_modelo_nao_tem_ferramenta_que_agenda():
     nomes = {f["function"]["name"] for f in tools.FERRAMENTAS_OPENAI}
     assert "agendar_visita_tecnico" not in nomes
@@ -134,8 +124,6 @@ def test_contrato_da_sessao_vence_o_que_o_modelo_digita(checkpointer):
     assert t["resultado"]["contrato"] == "C001"
     assert t["contrato_sobrescrito"] == "C004"
 
-
-# -------------------------------------------------------- triagem e RAG
 
 @pytest.mark.parametrize("mensagem", ["oi", "não funciona", "preciso de ajuda"])
 def test_entrada_sem_sintoma_pede_detalhes_sem_chamar_o_modelo(checkpointer, mensagem):
@@ -188,8 +176,6 @@ def test_citacao_inventada_e_detectada(checkpointer):
     assert r["saida"]["citacoes_invalidas"] == ["S99"]
     assert r["saida"]["suficiente"] is False
 
-
-# ------------------------------------------------------------- guardas
 
 def test_laco_e_detectado(checkpointer):
     r, _ = rodar("C001", "sem internet", [chamada("conferir_queda_bairro")] * 4, checkpointer)

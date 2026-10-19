@@ -1,10 +1,3 @@
-"""
-Verificação independente da remoção (docs/memoria.md): não usa o código de
-remoção, só procura o contrato em todos os lugares onde ele poderia estar:
-bancos SQLite (qualquer coluna de texto), logs e prompts.
-
-Uso: python -m scripts.varrer_contrato C001
-"""
 import os
 import sqlite3
 import sys

@@ -1,9 +1,3 @@
-"""
-Limites de autoridade (model-card §3.2 e §3.3), agora com a confirmação
-estrutural: o modelo não tem a ferramenta que agenda, e o agendamento só
-ocorre no nó `agendar`, depois do interrupt (tests/test_grafo.py). Aqui ficam
-os limites das próprias ferramentas, sem modelo.
-"""
 import pytest
 
 from src import config, db, tools

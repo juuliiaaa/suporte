@@ -1,12 +1,3 @@
-"""
-Roda os casos de demonstração com o modelo real (precisa do .env e de rede)
-e grava um log por caso em logs/. Depois rode: python -m scripts.gerar_io
-
-Uso:
-  python -m scripts.rodar_casos --reset        # recria bancos e roda todos
-  python -m scripts.rodar_casos INC AMB ESC      # só alguns (use os rótulos abaixo)
-O --reset apaga só dados/provedor.db, dados/memoria.db e dados/checkpoints.db.
-"""
 import argparse
 import datetime
 import os

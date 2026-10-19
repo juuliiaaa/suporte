@@ -1,14 +1,3 @@
-"""
-Ponto de entrada do atendimento. Executa o grafo (src/grafo.py), trata a
-pausa de aprovação humana e grava o log JSON.
-
-Uso:
-  python -m src.agent C004 "Minha internet caiu"                  # pergunta no terminal
-  python -m src.agent C004 "..." --decisao aprovar                # responde sozinho (para scripts)
-  python -m src.agent C004 "..." --decisao editar --data 2026-10-20
-  python -m src.agent C004 "..." --decisao expirou
-  python -m src.agent C001 "..." --rotulo caso_C001_feliz         # nome do log
-"""
 import argparse
 import datetime
 import hashlib
@@ -38,8 +27,6 @@ def _commit() -> str:
 
 
 def prompts_em_uso() -> dict:
-    """Combinação de prompts desta execução (enunciado §2.2): arquivo e hash
-    do conteúdo, para comparar o comportamento de hoje com o de outra versão."""
     usados = {}
     for papel, nome in (("sistema", config.PROMPT_SISTEMA), ("procedural", config.PROMPT_PROCEDURAL)):
         caminho = os.path.join(config.PASTA_PROMPTS, nome)
@@ -49,8 +36,6 @@ def prompts_em_uso() -> dict:
 
 
 def decisor_terminal(payload: dict) -> dict:
-    """Mostra exatamente o que será feito e espera a resposta até o prazo.
-    Thread em vez de select: funciona igual no Windows."""
     print("\n=== APROVAÇÃO NECESSÁRIA ===")
     print(f"Ação: {payload['acao']}  contrato={payload['contrato']}  data={payload['data_proposta']}")
     print(f"Consequência: {payload['consequencia']}")

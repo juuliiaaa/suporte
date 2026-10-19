@@ -1,12 +1,3 @@
-"""
-Mede a recuperação do corpus contra o conjunto de perguntas
-(dados/perguntas_rag.json). Não chama o modelo: recuperação é código.
-
-Uso:
-    python -m scripts.medir_rag                  # corpus vigente, k=3
-    python -m scripts.medir_rag --revogados      # inclui o documento revogado
-    python -m scripts.medir_rag --k 1 --k 3 --k 5
-"""
 import argparse
 import json
 import os

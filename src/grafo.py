@@ -1,20 +1,3 @@
-"""
-Grafo do atendimento (enunciado §2 e §3). Nós, arestas e condições estão
-documentados em docs/grafo.md; conferir_grafo.py imprime o grafo compilado.
-
-  entrada -> carregar_memoria -> triagem --(suporte)--> agente <-> ferramentas
-                                    |                      |            |
-                                    |                      |       (propor_visita)
-                                    |                      |            v
-                                    |                      |        aprovacao -> agendar -> agente
-                                    v                      v                         |
-                              encaminhar_humano <----- (limites) <-------------------+ (expirou)
-                                    |
-                                    +--> finalizar -> registrar_memoria -> END
-
-Estrutural, não textual: o modelo não tem a ferramenta que agenda. Só o nó
-`agendar` agenda, e só depois que `aprovacao` recebeu a resposta de uma pessoa.
-"""
 import json
 import re
 import time
@@ -73,7 +56,6 @@ def _ferramentas_ok(trajetoria, nome):
 
 
 def construir_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None):
-    # ---------------------------------------------------------------- nós
     def entrada(estado):
         hoje = tools._hoje().isoformat()
         if not (estado.get("mensagem") or "").strip():
@@ -322,7 +304,6 @@ def construir_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None)
                                              estado["mensagem"], trajetoria)
         return {"trajetoria": [{"tipo": "memoria_gravada", "gravou": True, "resultado": escrito}]}
 
-    # ------------------------------------------------------------ arestas
     def apos_entrada(estado):
         return "encaminhar_humano" if estado.get("motivo_parada") else "carregar_memoria"
 
@@ -377,10 +358,7 @@ _grafos = {}
 
 
 def obter_grafo(llm, checkpointer=None, indice: Optional[rag.Indice] = None):
-    """Compila uma vez por combinação (modelo, checkpointer) e reaproveita nas
-    execuções seguintes do mesmo processo (enunciado §6.4: o grafo é compilado
-    uma vez, não remontado a cada execução). O cache guarda referências fortes
-    aos objetos, para que o id de um objeto já descartado não seja reutilizado."""
+
     chave = (id(llm), id(checkpointer), id(indice))
     if chave not in _grafos:
         _grafos[chave] = (llm, checkpointer, indice, construir_grafo(llm, checkpointer, indice))
