@@ -95,18 +95,16 @@ def test_argumentos_invalidos_do_modelo_viram_vazio():
     assert _args_ou_vazio("") == {}
 
 
-def test_limpar_logs_antigos_so_pega_json_vencido(tmp_path):
-    import os
-    import time
+def test_limpar_logs_antigos_usa_o_timestamp_do_log_e_so_json_vencido(tmp_path, monkeypatch):
+    import datetime as dt
 
-    from scripts.limpar_logs_antigos import antigos
+    from scripts import limpar_logs_antigos as lim
+    from src import config
 
-    velho = tmp_path / "velho.json"
-    novo = tmp_path / "novo.json"
-    outro = tmp_path / "velho.txt"
-    for f in (velho, novo, outro):
-        f.write_text("{}")
-    antes = time.time() - 40 * 86400
-    os.utime(velho, (antes, antes))
-    os.utime(outro, (antes, antes))
-    assert antigos(str(tmp_path)) == [str(velho)]
+    agora = dt.datetime(2026, 11, 12, 12, 0, 0)
+    (tmp_path / "velho.json").write_text(json.dumps({"timestamp": (agora - dt.timedelta(days=40)).isoformat()}))
+    (tmp_path / "novo.json").write_text(json.dumps({"timestamp": (agora - dt.timedelta(days=1)).isoformat()}))
+    (tmp_path / "sem_marca.json").write_text("{}")          # sem timestamp legível: nunca é apagado
+    (tmp_path / "velho.txt").write_text("x")                # não é .json
+    monkeypatch.setattr(config, "PASTA_LOGS", str(tmp_path))
+    assert [c.name for c in lim.candidatos(30, agora=agora)] == ["velho.json"]

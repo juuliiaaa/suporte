@@ -288,7 +288,7 @@ Na Parte 1 esse passo era uma varredura da palavra "sim" na conversa. Separá-lo
 
 ### 12.4 As exceções que decidiram a arquitetura
 
-- **O cliente reclama e o teste da linha está normal.** Em `caso_C002_divergencia` e `caso_C005_nao_agenda` o sinal é bom (-18 e -19 dBm), mas o bairro está em manutenção. Mesmo quando o cliente pede um técnico ("quero que mandem um técnico hoje"), nenhuma visita individual é agendada. Essa regra está no código (`propor_visita`), não só no prompt.
+- **O cliente reclama e o teste da linha está normal.** Em `caso_C002_divergencia` a linha está `ONLINE` com sinal bom (-18 dBm) e o bairro não está em manutenção: nada no sistema explica a queda, então o agente não reinicia nem agenda e orienta um teste local. Em `caso_C005_nao_agenda` o sinal também é bom (-19 dBm), mas o bairro está em manutenção; mesmo quando o cliente pede um técnico ("quero que mandem um técnico hoje"), nenhuma visita individual é agendada. Essa regra está no código (`propor_visita`), não só no prompt.
 - **Contrato inexistente.** Em `caso_C999_inexistente` nenhuma ferramenta consegue testar a linha. A resposta sai com `suficiente=false` e oferece um atendente humano, em vez de inventar um diagnóstico.
 - **Manual desatualizado.** O corpus mantém `04_manual_sintomas_v0`, revogado, que contradiz os documentos atuais em três números. Deixá-lo no índice faria o sistema citar valor errado com aparência de fonte (`docs/rag.md`).
 - **Mensagem sem sintoma.** "não funciona" não diz o que testar. Quando essa regra ficou só no prompt, o modelo testou a linha mesmo assim; hoje ela é uma regra de triagem em código (`caso_entrada_incompleta`).

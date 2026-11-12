@@ -40,6 +40,17 @@ def chamada(nome: str, args: Optional[dict] = None, id: Optional[str] = None, to
     return RespostaLLM(tool_calls=[{"id": id or f"call_{nome}", "nome": nome, "args": args or {}}], tokens=tokens)
 
 
+def _args_ou_vazio(texto_json: Optional[str]) -> dict:
+    """Argumentos de ferramenta vêm do modelo como texto e podem não ser JSON
+    válido. Em vez de derrubar o atendimento, viram {}: a ferramenta devolve
+    erro como dado e o laço segue (tetos e detector de laço continuam valendo)."""
+    try:
+        valor = json.loads(texto_json or "{}")
+    except json.JSONDecodeError:
+        return {}
+    return valor if isinstance(valor, dict) else {}
+
+
 class ClienteLLM:
     def __init__(self, client=None, modelo: str = config.MODELO, esperar: Callable[[float], None] = time.sleep):
         self._client = client
@@ -83,7 +94,7 @@ class ClienteLLM:
                 raise ErroLLMFatal(f"{type(erro).__name__}: {erro}") from erro
         msg = r.choices[0].message
         chamadas = [
-            {"id": c.id, "nome": c.function.name, "args": json.loads(c.function.arguments or "{}")}
+            {"id": c.id, "nome": c.function.name, "args": _args_ou_vazio(c.function.arguments)}
             for c in (msg.tool_calls or [])
         ]
         total = r.usage.total_tokens if getattr(r, "usage", None) else 0

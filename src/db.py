@@ -70,7 +70,7 @@ def seed(conn):
     """Popula os casos usados na demonstração (item 4.5 / case §2.8)."""
     clientes = [
         ("C001", "Marcos Silva", "Vila Nova"),   # caso simples
-        ("C002", "Ana Souza", "Jardim Ipê"),     # caso de divergência
+        ("C002", "Ana Souza", "Vila Nova"),      # divergência: linha ONLINE, bairro sem manutenção, cliente diz que caiu
         ("C004", "Rita Mendes", "Vila Nova"),    # caso de falha física
         ("C005", "Pedro Alves", "Jardim Ipê"),   # caso: não deve agendar
         # C999 não existe de propósito — caso de registro inexistente
