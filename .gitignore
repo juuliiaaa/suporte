@@ -1,8 +1,16 @@
+# Segredos e ambiente local
 .env
+.env.*
+!.env.example
 .venv/
 venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
+
+# Bancos simulados e checkpoints locais
 dados/*.db
+
+# Arquivos temporários/backup; logs de demonstração em logs/ são versionados
 logs_bkp/
+*.tmp

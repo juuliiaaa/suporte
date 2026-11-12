@@ -1,0 +1,141 @@
+{
+  "timestamp": "2026-11-11T23:58:16",
+  "commit": "849dad9",
+  "versao_sistema": "3.0.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:08f5ca02",
+  "trace_id": "6b9d4ca8f6822286e57ab24d64b87a9e",
+  "contrato": "C001",
+  "mensagem_inicial": "A luz do modem está piscando vermelha e a internet caiu.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "bairro": "Vila Nova",
+        "em_manutencao": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "reiniciar_conexao",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": ""
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "a00653770a5c6504",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "829431df3ff9b4d8",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 6,
+  "tokens": 9260,
+  "segundos_ativos": 10.78,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Não consegui concluir seu atendimento por aqui. Vou encaminhar você para um atendente humano, com o que já foi verificado.",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "reiniciar_conexao",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

@@ -1,93 +1,74 @@
-"""
-Demonstração da remoção por titular (docs/memoria.md §4), sem modelo e sem
-tocar em dados/: tudo acontece numa pasta temporária.
-
-Passos, na ordem que o enunciado pede:
-  1. gravar: dois atendimentos do contrato C001 (modelo simulado);
-  2. verificar que o comportamento mudou: o prompt do segundo atendimento
-     carrega o histórico do cliente;
-  3. varrer antes de remover (o contrato aparece onde foi gravado);
-  4. remover;
-  5. verificar que voltou: a memória devolve vazio;
-  6. varrer de novo (zero ocorrências).
-Também mede o volume de escrita de um atendimento.
-
-Uso: python -m scripts.demo_remocao
-"""
-import os
+"""Demonstra gravação, efeito, remoção e varredura em diretório temporário."""
+import json
 import sqlite3
 import tempfile
+from pathlib import Path
 
-from src import config, db, memoria, tools
-from src.agent import decisor_fixo, executar_atendimento
-from src.llm import LLMSimulado, chamada, texto
+from src import memoria
+from scripts.varrer_contrato import varrer
 
-CONTRATO = "C001"
+CONTRATO = "DEMO-REMOVER"
+HOJE = "2026-11-12"
 
+with tempfile.TemporaryDirectory(prefix="demo_remocao_") as tmp:
+    raiz = Path(tmp)
+    memoria_db = raiz / "memoria.db"
+    checkpoint_db = raiz / "checkpoints.db"
+    logs = raiz / "logs"
+    logs.mkdir()
 
-def atendimento(roteiro, rotulo):
-    return executar_atendimento(CONTRATO, "A luz do modem está piscando vermelha e a internet caiu.",
-                                llm=LLMSimulado(roteiro), decisor=decisor_fixo("rejeitar"), rotulo=rotulo)
+    trajetoria = [{
+        "tipo": "ferramenta", "nome": "testar_linha", "args": {"contrato": CONTRATO},
+        "resultado": {"status": "OFFLINE", "sinal_dbm": -30.0, "falha_fisica_provavel": True},
+    }]
+    gravacao = memoria.gravar_atendimento(
+        CONTRATO, HOJE, "Minha internet caiu e a luz do modem ficou vermelha.",
+        trajetoria, caminho=str(memoria_db),
+    )
 
+    conn = sqlite3.connect(checkpoint_db)
+    conn.execute("CREATE TABLE checkpoints (thread_id TEXT)")
+    conn.execute("CREATE TABLE writes (thread_id TEXT)")
+    conn.execute("INSERT INTO checkpoints VALUES (?)", (f"{CONTRATO}:abc12345",))
+    conn.execute("INSERT INTO writes VALUES (?)", (f"{CONTRATO}:abc12345",))
+    conn.commit(); conn.close()
+    (logs / "execucao.json").write_text(
+        json.dumps({"contrato": CONTRATO, "mensagem_inicial": "internet caiu"}), encoding="utf-8"
+    )
 
-def volume():
-    conn = sqlite3.connect(config.CAMINHO_MEMORIA)
-    saida = {}
-    for tabela in ("semantica", "episodica"):
-        linhas = conn.execute(f"SELECT * FROM {tabela}").fetchall()
-        saida[tabela] = (len(linhas), sum(len(str(c)) for l in linhas for c in l))
+    contexto_antes = memoria.montar_contexto(
+        CONTRATO, "internet caiu luz vermelha", HOJE, caminho=str(memoria_db)
+    )
+    conn = sqlite3.connect(memoria_db)
+    tamanho_episodio = conn.execute("SELECT length(texto) FROM episodica WHERE contrato=?", (CONTRATO,)).fetchone()[0]
+    tamanho_fato = conn.execute("SELECT length(valor) FROM semantica WHERE contrato=?", (CONTRATO,)).fetchone()[0]
     conn.close()
-    return saida
 
+    print("1. gravar")
+    print("   resultado:", gravacao)
+    print(f"   volume: 1 episódio ({tamanho_episodio} caracteres) + 1 fato semântico ({tamanho_fato} caracteres)")
+    print("2. o comportamento mudou?")
+    print("   contexto recupera histórico do titular:", bool(contexto_antes))
+    print("3. varrer antes de remover")
+    antes = varrer(CONTRATO, raiz)
+    print(f"   {len(antes)} ocorrência(s)")
+    for item in antes:
+        print("  ", item)
 
-def main():
-    from scripts.varrer_contrato import varrer
+    print("4. remover")
+    removidos = memoria.remover_titular(CONTRATO, str(memoria_db), str(checkpoint_db), str(logs))
+    print("  ", removidos)
 
-    with tempfile.TemporaryDirectory() as pasta:
-        os.makedirs(os.path.join(pasta, "dados"))
-        config.RAIZ = pasta
-        db.DB_PATH = os.path.join(pasta, "dados", "provedor.db")
-        config.CAMINHO_MEMORIA = os.path.join(pasta, "dados", "memoria.db")
-        config.CAMINHO_CHECKPOINTS = os.path.join(pasta, "dados", "checkpoints.db")
-        config.PASTA_LOGS = os.path.join(pasta, "logs")
-        db.inicializar()
-        hoje = tools._hoje().isoformat()
+    print("5. o comportamento voltou?")
+    contexto_depois = memoria.montar_contexto(
+        CONTRATO, "internet caiu luz vermelha", HOJE, caminho=str(memoria_db)
+    )
+    print("   memória devolve vazio:", not contexto_depois)
 
-        print("1. gravar")
-        atendimento([chamada("testar_linha"), chamada("reiniciar_conexao"), chamada("testar_linha"),
-                     texto("Reiniciei e a linha voltou.")], "demo_1")
-        v = volume()
-        print(f"   volume de escrita de um atendimento: semantica {v['semantica'][0]} registro(s), "
-              f"{v['semantica'][1]} caracteres; episodica {v['episodica'][0]} registro(s), {v['episodica'][1]} caracteres")
-
-        print("2. o comportamento mudou?")
-        vistos = []
-
-        def espiar(mensagens):
-            vistos.append(mensagens[0]["content"])
-            return texto("ok")
-        atendimento([espiar], "demo_2")
-        print("   prompt do 2o atendimento traz o histórico do cliente:", "Histórico deste cliente" in vistos[0])
-
-        print("3. varrer antes de remover")
-        antes = varrer(CONTRATO)
-        print(f"   {len(antes)} ocorrência(s)")
-        for a in antes:
-            caminho, sep, resto = a.partition(": ")
-            print("    ", os.path.relpath(caminho, pasta).replace(os.sep, "/") + sep + resto)
-
-        print("4. remover")
-        print("  ", memoria.remover_titular(CONTRATO))
-
-        print("5. o comportamento voltou?")
-        print("   memória devolve vazio:", memoria.montar_contexto(CONTRATO, "luz vermelha", hoje) == "")
-
-        print("6. varrer depois de remover")
-        depois = varrer(CONTRATO)
-        print(f"   {len(depois)} ocorrência(s)")
-        for a in depois:
-            print("    ", a)
-
-
-if __name__ == "__main__":
-    main()
+    print("6. varrer depois de remover")
+    depois = varrer(CONTRATO, raiz)
+    print(f"   {len(depois)} ocorrência(s)")
+    for item in depois:
+        print("  ", item)
+    if depois or contexto_depois:
+        raise SystemExit("A remoção não eliminou todos os dados ou o comportamento não foi revertido")

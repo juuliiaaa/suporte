@@ -1,0 +1,141 @@
+{
+  "timestamp": "2026-11-12T00:12:22",
+  "commit": "849dad9",
+  "versao_sistema": "3.1.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:6d59a442",
+  "trace_id": "ae230194912dc763414bda1bded05a3c",
+  "contrato": "C001",
+  "mensagem_inicial": "Minha internet caiu de novo, a luz está vermelha.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": true
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "bairro": "Vila Nova",
+        "em_manutencao": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "reiniciar_conexao",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "A linha voltou a ficar online após reiniciar a conexão.  \nTeste se a internet está funcionando agora.  \nSe o problema persistir, avise que verificaremos mais detalhes."
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "baa622d28635121b",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "ccb0e9accf8bd3cd",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 6,
+  "tokens": 9656,
+  "segundos_ativos": 42.97,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "A linha voltou a ficar online após reiniciar a conexão.  \nTeste se a internet está funcionando agora.  \nSe o problema persistir, avise que verificaremos mais detalhes.",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "reiniciar_conexao",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

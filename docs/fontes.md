@@ -12,5 +12,6 @@
 
 - Enunciado da Segunda Entrega (material da disciplina), que define os itens 0 a 10 e os critérios de cada documento.
 - Limite de gasto da conta Groq: https://console.groq.com/docs/spend-limits (citado em `docs/modelos.md` §5)
+- Tratamento, região e retenção de dados na Groq: https://console.groq.com/docs/your-data (citado em `docs/modelos.md` §5; uso para treinamento permaneceu sem confirmação)
 - LangGraph 1.2.16, código-fonte da biblioteca instalada: `langgraph/_internal/_config.py` linha 32, onde o padrão de `recursion_limit` é 10007 (consultado out/2026; ver `docs/grafo.md` §4).
 - Versões fixadas das dependências: `requirements.txt`.

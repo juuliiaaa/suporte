@@ -83,7 +83,7 @@ O sistema não descobre sozinho que um documento envelheceu: nada no texto de V0
 
 **Forma escolhida: ferramenta do agente.** O modelo decide quando consultar (`consultar_base_conhecimento`), como decide chamar qualquer outra ferramenta. A alternativa, uma etapa fixa antes de toda resposta, faria uma busca em toda execução.
 
-**Chamadas de recuperação por execução**, lidas dos 11 logs de 19/10/2026 em `docs/io.md`:
+**Chamadas de recuperação por execução**, lidas dos 11 logs em `logs/` (10 execuções de 19/10/2026 e um registro histórico de 18/10/2026), reproduzidos em `docs/io.md`:
 
 | Caso | Consultas ao corpus | Sem trecho útil |
 |---|---|---|

@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-11-12T00:01:44",
+  "commit": "849dad9",
+  "versao_sistema": "3.0.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:4bef0bc5",
+  "trace_id": "e519beae6d0183290ba68109c710621a",
+  "contrato": "C001",
+  "mensagem_inicial": "Como faço para abrir portas no roteador para jogar online?",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": ""
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "ecd4f0aadf4ae81b",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 1,
+  "tokens": 1566,
+  "segundos_ativos": 2.25,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Não consegui concluir seu atendimento por aqui. Vou encaminhar você para um atendente humano, com o que já foi verificado.",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "sem_fonte",
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

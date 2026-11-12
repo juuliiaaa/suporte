@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-11-12T00:04:38",
+  "commit": "849dad9",
+  "versao_sistema": "3.0.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C999:bd9e3051",
+  "trace_id": "1f4cf8aad61ca505a4b1f448277bbf0e",
+  "contrato": "C999",
+  "mensagem_inicial": "Minha internet caiu.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Oi! Pode me dizer o que está acontecendo?  \n- A luz do modem está acesa ou apagada?  \n- Todos os dispositivos estão sem conexão ou apenas alguns?  \n- Você percebe alguma mensagem de erro ou luz piscando?"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "c0fa1e22886ba51a",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 1,
+  "tokens": 1177,
+  "segundos_ativos": 1.13,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Oi! Pode me dizer o que está acontecendo?  \n- A luz do modem está acesa ou apagada?  \n- Todos os dispositivos estão sem conexão ou apenas alguns?  \n- Você percebe alguma mensagem de erro ou luz piscando?",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "sem_fonte",
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

@@ -1,6 +1,12 @@
+"""Executa os dez cenários com o modelo configurado, em bancos temporários.
+
+O estado local do projeto (provedor.db, memoria.db e checkpoints.db) não é apagado.
+Os novos logs recebem sufixo temporal para preservar as execuções anteriores.
+"""
 import argparse
 import datetime
 import os
+import tempfile
 
 from src import config, db
 from src.agent import decisor_fixo, executar_atendimento
@@ -23,22 +29,34 @@ CASOS = {
 
 
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("casos", nargs="*")
-    p.add_argument("--reset", action="store_true")
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("casos", nargs="*", choices=sorted(CASOS))
     a = p.parse_args()
-    if a.reset:
-        for caminho in (db.DB_PATH, config.CAMINHO_MEMORIA, config.CAMINHO_CHECKPOINTS):
-            if os.path.exists(caminho):
-                os.remove(caminho)
-    db.inicializar()
-    for chave in a.casos or CASOS:
-        rotulo, contrato, mensagem, (decisao, data) = CASOS[chave]
-        print(f"\n### {rotulo}")
-        r = executar_atendimento(contrato, mensagem, decisor=decisor_fixo(decisao, data), rotulo=rotulo)
-        s = r["saida"]
-        print(f"parou por: {r['motivo_parada']} | suficiente={s['suficiente']} | fontes={[f['id'] for f in s['fontes']]}")
-        print(f"resposta: {s['resultado']}")
+
+    # Isola os bancos para que a demonstração não apague nem altere dados locais.
+    originais = (db.DB_PATH, config.CAMINHO_MEMORIA, config.CAMINHO_CHECKPOINTS)
+    carimbo = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    with tempfile.TemporaryDirectory(prefix="agente_casos_") as pasta:
+        db.DB_PATH = os.path.join(pasta, "provedor.db")
+        config.CAMINHO_MEMORIA = os.path.join(pasta, "memoria.db")
+        config.CAMINHO_CHECKPOINTS = os.path.join(pasta, "checkpoints.db")
+        try:
+            db.inicializar()
+            for chave in a.casos or CASOS:
+                rotulo_base, contrato, mensagem, (decisao, data) = CASOS[chave]
+                rotulo = f"exec_{carimbo}_{rotulo_base}"
+                print(f"\n### {rotulo_base}")
+                r = executar_atendimento(
+                    contrato, mensagem,
+                    decisor=decisor_fixo(decisao, data),
+                    rotulo=rotulo,
+                )
+                s = r["saida"]
+                print(f"parou por: {r['motivo_parada']} | suficiente={s['suficiente']} | fontes={[f['id'] for f in s['fontes']]}")
+                print(f"resposta: {s['resultado']}")
+                print(f"log: {r['arquivo_log']}")
+        finally:
+            db.DB_PATH, config.CAMINHO_MEMORIA, config.CAMINHO_CHECKPOINTS = originais
 
 
 if __name__ == "__main__":

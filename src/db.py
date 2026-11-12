@@ -1,9 +1,3 @@
-"""
-Camada de acesso ao "sistema do provedor" (item 4.2 — integração com software
-tradicional). Banco SQLite simulado: clientes, modems e status de bairro.
-Nenhuma ferramenta do agente lê ou escreve neste arquivo diretamente; todas
-passam por estas funções.
-"""
 import hashlib
 import sqlite3
 import os

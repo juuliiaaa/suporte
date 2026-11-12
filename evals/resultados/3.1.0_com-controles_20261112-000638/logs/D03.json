@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-11-12T00:07:03",
+  "commit": "849dad9",
+  "versao_sistema": "3.1.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:4a8dcb4f",
+  "trace_id": "21167e8e8535b5a4d59f1b32ea8779b9",
+  "contrato": "C001",
+  "mensagem_inicial": "Minha internet cai e volta sozinha o dia todo.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Oi! Pode me dizer:\n\n- O que a luz do modem/roteador mostra quando cai e quando volta?\n- Todos os dispositivos ficam sem internet ou apenas alguns?\n- Há alguma mensagem de erro no app ou no painel do cliente?"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "186ef6f1f46bc1e8",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 1,
+  "tokens": 1225,
+  "segundos_ativos": 1.17,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Oi! Pode me dizer:\n\n- O que a luz do modem/roteador mostra quando cai e quando volta?\n- Todos os dispositivos ficam sem internet ou apenas alguns?\n- Há alguma mensagem de erro no app ou no painel do cliente?",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "sem_fonte",
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-11-12T04:46:37",
+  "commit": "sem-git",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:8e0b3af7",
+  "contrato": "C001",
+  "mensagem_inicial": "A luz do modem está piscando vermelha e a internet caiu.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "bairro": "Vila Nova",
+        "em_manutencao": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "reiniciar_conexao",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Pronto! A conexão foi reiniciada e o teste confirmou que a linha está **online** com sinal normal (-22 dBm).\n\nPode testar a navegação aí. Se a luz continuar piscando vermelha ou a internet cair de novo, me avise que a gente investiga mais a fundo."
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "0606996698db63fb",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "ccb0e9accf8bd3cd",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 4,
+  "tokens": 6489,
+  "segundos_ativos": 4.49,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Pronto! A conexão foi reiniciada e o teste confirmou que a linha está **online** com sinal normal (-22 dBm).\n\nPode testar a navegação aí. Se a luz continuar piscando vermelha ou a internet cair de novo, me avise que a gente investiga mais a fundo.",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "reiniciar_conexao",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

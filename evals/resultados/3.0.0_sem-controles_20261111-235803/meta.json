@@ -1,0 +1,18 @@
+{
+  "rodada": "3.0.0_sem-controles_20261111-235803",
+  "versao_sistema": "3.0.0",
+  "controles": "off",
+  "dataset_versao": "1.0.0",
+  "n_casos": 25,
+  "invalidos": [],
+  "nao_executados": [],
+  "modelo": "openai/gpt-oss-20b",
+  "juiz_modelo": null,
+  "juiz_rubrica": null,
+  "data": "2026-11-12T00:05:38",
+  "origens": {
+    "producao": 0,
+    "desenvolvimento": 14,
+    "sintetico": 11
+  }
+}

@@ -16,6 +16,7 @@ from langgraph.types import Command
 from . import config, db
 from .grafo import obter_grafo
 from .llm import ClienteLLM
+from .schemas import EntradaAtendimento
 
 
 def _commit() -> str:
@@ -82,8 +83,11 @@ def executar_atendimento(
     try:
         grafo = obter_grafo(llm, checkpointer)
         thread_id = f"{contrato}:{uuid.uuid4().hex[:8]}"
+        # O contrato de entrada é validado no limite público do sistema.
+        entrada = EntradaAtendimento(
+            contrato=contrato, mensagem=mensagem, thread_id=thread_id
+        ).model_dump()
         cfg = {"configurable": {"thread_id": thread_id}, "recursion_limit": config.RECURSION_LIMIT}
-        entrada = {"thread_id": thread_id, "contrato": contrato, "mensagem": mensagem}
         pausas, erro = [], None
         try:
             resultado = grafo.invoke(entrada, cfg)
@@ -135,9 +139,9 @@ def main():
     db.inicializar()
     decisor = decisor_fixo(a.decisao, a.data) if a.decisao else decisor_terminal
     r = executar_atendimento(a.contrato, a.mensagem, decisor=decisor, rotulo=a.rotulo)
-    print(f"\nResposta: {r['saida']['resultado']}")
-    print(f"Fontes: {[f['id'] for f in r['saida']['fontes']]}  suficiente={r['saida']['suficiente']}")
-    print(f"Parou por: {r['motivo_parada']}   Log: {r['arquivo_log']}")
+    print("\nObjeto de saída validado:")
+    print(json.dumps(r["saida"], ensure_ascii=False, indent=2))
+    print(f"\nParou por: {r['motivo_parada']}   Log: {r['arquivo_log']}")
 
 
 if __name__ == "__main__":

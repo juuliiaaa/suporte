@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-11-12T00:11:21",
+  "commit": "849dad9",
+  "versao_sistema": "3.1.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C004:a43f168b",
+  "trace_id": "31d733ea29ea1d340bbcbbc6eaeee843",
+  "contrato": "C004",
+  "mensagem_inicial": "Sem internet nenhuma, a luz está vermelha.",
+  "trajetoria": [
+    {
+      "tipo": "controle",
+      "controle": "C1_canal_contrato"
+    },
+    {
+      "tipo": "transbordo",
+      "motivo": "identidade_nao_verificada"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": false,
+      "motivo": "identidade_nao_verificada"
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": null,
+  "tokens": 0,
+  "segundos_ativos": 0.0,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "identidade_nao_verificada",
+  "saida": {
+    "resultado": "Não consegui confirmar este atendimento com o contrato informado, então não vou consultar nem alterar nada. Vou encaminhar você para um atendente humano.",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "identidade_nao_verificada",
+    "encaminhar_humano": true,
+    "motivo_parada": "identidade_nao_verificada",
+    "citacoes_invalidas": []
+  }
+}

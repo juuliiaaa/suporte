@@ -52,7 +52,7 @@ O último valor é o único corte que o código aplica. `config.ORCAMENTO_TOKENS
 
 **O código extrai por regra**, no nó `registrar_memoria`, no fim do atendimento. O modelo não decide o que vira memória: o que entra vem do que as ferramentas devolveram (`extrair_episodio`), e o que o cliente apenas afirmou não vira fato. Atendimento com contrato inexistente não grava nada. O preço da escolha é que a regra não prevê o que não foi escrito nela: uma causa nova cai em `sem_causa_identificada`.
 
-**Volume por execução**, medido em `python -m scripts.demo_remocao`: um episódio (286 caracteres) e um fato, `ultimo_sinal_dbm` (82 caracteres), ou seja, 2 registros e cerca de 370 caracteres por atendimento. Sem teste de linha bem-sucedido, só o episódio.
+**Volume por execução:** o nó grava até 2 registros: um episódio e, quando houve teste de linha bem-sucedido, um fato semântico (`ultimo_sinal_dbm`). No cenário sintético do `scripts.demo_remocao`, o episódio teve 108 caracteres e o valor do fato, 5 caracteres; o tamanho do episódio varia com o relato e os campos extraídos.
 
 **Idempotência.** A chave de cada registro deriva do conteúdo (contrato, chave, valor e data). Gravar o mesmo fato duas vezes devolve `ja_existia=True` e não cria outra linha.
 
@@ -85,28 +85,21 @@ O case escolhe as três, cada uma por uma razão de domínio.
 
 ```
 1. gravar
-   volume de escrita de um atendimento: semantica 1 registro(s), 82 caracteres; episodica 1 registro(s), 286 caracteres
+   resultado: episódio ja_existia=false; fato ja_existia=false
+   volume: 1 episódio (108 caracteres) + 1 fato semântico (5 caracteres)
 2. o comportamento mudou?
-   prompt do 2o atendimento traz o histórico do cliente: True
+   contexto recupera histórico do titular: True
 3. varrer antes de remover
-   8 ocorrência(s)
-     dados/memoria.db: semantica.contrato (1)
-     dados/memoria.db: episodica.contrato (2)
-     dados/checkpoints.db: checkpoints.thread_id (22)
-     dados/checkpoints.db: checkpoints.checkpoint (10)
-     dados/checkpoints.db: writes.thread_id (85)
-     dados/checkpoints.db: writes.value (10)
-     logs/demo_2.json
-     logs/demo_1.json
+   5 ocorrência(s): 2 em checkpoints.db, 2 em memoria.db e 1 em logs/execucao.json
 4. remover
-   {'semantica': 1, 'descartes': 0, 'episodica': 2, 'checkpoints': 107, 'logs': 2}
+   {'semantica': 1, 'descartes': 0, 'episodica': 1, 'checkpoints': 2, 'logs': 1}
 5. o comportamento voltou?
    memória devolve vazio: True
 6. varrer depois de remover
    0 ocorrência(s)
 ```
 
-O passo 3 mostra que o contrato estava em dois bancos (`memoria.db` e `checkpoints.db`) e em dois logs; o passo 6 mostra zero.
+O passo 3 mostra que o contrato estava em dois bancos (`memoria.db` e `checkpoints.db`) e em um log; o passo 6 mostra zero.
 
 **O que a remoção não cobre.** `docs/io.md` é gerado a partir dos logs e cita contratos e mensagens. Os contratos do projeto são sintéticos; com dado real, o arquivo teria de ser regenerado depois da remoção.
 

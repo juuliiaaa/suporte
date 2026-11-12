@@ -1,0 +1,16 @@
+{
+  "rodada": "3.0.0_sem-controles_20261111-214436",
+  "versao_sistema": "3.0.0",
+  "controles": "off",
+  "dataset_versao": "1.0.0",
+  "n_casos": 25,
+  "modelo": "qwen/qwen3.8-27b",
+  "juiz_modelo": null,
+  "juiz_rubrica": null,
+  "data": "2026-11-11T22:01:12",
+  "origens": {
+    "producao": 0,
+    "desenvolvimento": 14,
+    "sintetico": 11
+  }
+}

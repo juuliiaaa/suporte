@@ -1,0 +1,112 @@
+{
+  "timestamp": "2026-11-11T21:46:04",
+  "commit": "849dad9",
+  "versao_sistema": "3.0.0",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C005:c7a95565",
+  "trace_id": "9451ecaa2d0f58bf0ce3d9f0c430088c",
+  "contrato": "C005",
+  "mensagem_inicial": "Estou sem internet, quero que mandem um técnico hoje.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C005"
+      },
+      "resultado": {
+        "contrato": "C005",
+        "status": "OFFLINE",
+        "sinal_dbm": -19.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "reiniciar_conexao",
+      "args": {
+        "contrato": "C005"
+      },
+      "resultado": {
+        "contrato": "C005",
+        "status": "ONLINE"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C005"
+      },
+      "resultado": {
+        "contrato": "C005",
+        "status": "ONLINE",
+        "sinal_dbm": -19.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Boa notícia: a conexão voltou a ficar ONLINE após o reinício à distância, e o teste confirmou sinal estável em -19 dBm.\n\nComo não há falha física, não é o caso de visita técnica. Se o problema voltar, me avise que eu rodo o teste de novo."
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "afa1e78acc9f656f",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "a32354a4b2adc1e2",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 4,
+  "tokens": 6422,
+  "segundos_ativos": 49.54,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Boa notícia: a conexão voltou a ficar ONLINE após o reinício à distância, e o teste confirmou sinal estável em -19 dBm.\n\nComo não há falha física, não é o caso de visita técnica. Se o problema voltar, me avise que eu rodo o teste de novo.",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "reiniciar_conexao",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

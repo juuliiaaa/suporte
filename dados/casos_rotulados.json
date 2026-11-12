@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "rotulo": "caso_C001_feliz",
+    "chave": "C001",
+    "contrato": "C001",
+    "mensagem": "A luz do modem está piscando vermelha e a internet caiu.",
+    "acao_esperada": "reiniciar",
+    "porque": "linha OFFLINE com sinal bom e bairro sem manutenção: reiniciar e confirmar com novo teste"
+  },
+  {
+    "id": 2,
+    "rotulo": "caso_C002_divergencia",
+    "chave": "C002",
+    "contrato": "C002",
+    "mensagem": "Minha internet caiu, nada navega aqui em casa.",
+    "acao_esperada": "nao_agir",
+    "porque": "o teste mostra ONLINE com sinal bom e o bairro está sem manutenção: o relato contradiz o sistema, então o agente não reinicia, não agenda e orienta teste local"
+  },
+  {
+    "id": 3,
+    "rotulo": "caso_C999_inexistente",
+    "chave": "C999",
+    "contrato": "C999",
+    "mensagem": "Minha internet caiu.",
+    "acao_esperada": "nao_agir",
+    "porque": "contrato inexistente: o erro da ferramenta é tratado como dado e a resposta sai com suficiente=false",
+    "suficiente_esperado": false
+  },
+  {
+    "id": 4,
+    "rotulo": "caso_C005_nao_agenda",
+    "chave": "C005",
+    "contrato": "C005",
+    "mensagem": "Estou sem internet, quero que mandem um técnico hoje.",
+    "acao_esperada": "nao_agir",
+    "porque": "bairro em manutenção: nenhuma visita individual, mesmo com o cliente pedindo",
+    "bairro_em_manutencao": true
+  },
+  {
+    "id": 5,
+    "rotulo": "caso_fora_do_corpus",
+    "chave": "FORA",
+    "contrato": "C001",
+    "mensagem": "Como faço para abrir portas no roteador para jogar online?",
+    "acao_esperada": "escalar",
+    "porque": "a pergunta não está no corpus: recusa com suficiente=false e oferece um atendente",
+    "suficiente_esperado": false
+  },
+  {
+    "id": 6,
+    "rotulo": "caso_C004_pausa_edita",
+    "chave": "C004",
+    "contrato": "C004",
+    "mensagem": "Sem internet nenhuma, a luz está vermelha.",
+    "acao_esperada": "agendar",
+    "porque": "falha física (sinal -30 dBm): o grafo pausa, o cliente edita a data e o código agenda"
+  },
+  {
+    "id": 7,
+    "rotulo": "caso_C004_aprovacao_repetida",
+    "chave": "C004B",
+    "contrato": "C004",
+    "mensagem": "Sem internet nenhuma, a luz está vermelha.",
+    "acao_esperada": "agendar",
+    "porque": "a mesma aprovação repetida não cria uma segunda visita (ja_existia=true)",
+    "ja_existia_esperado": true
+  },
+  {
+    "id": 8,
+    "rotulo": "caso_entrada_incompleta",
+    "chave": "INC",
+    "contrato": "C001",
+    "mensagem": "não funciona",
+    "acao_esperada": "nao_agir",
+    "porque": "a mensagem não diz o que testar: pede detalhes sem chamar ferramenta",
+    "suficiente_esperado": false
+  },
+  {
+    "id": 9,
+    "rotulo": "caso_entrada_ambigua",
+    "chave": "AMB",
+    "contrato": "C001",
+    "mensagem": "A internet está ruim hoje, não sei se é o wifi ou a internet mesmo.",
+    "acao_esperada": "nao_agir",
+    "porque": "relato ambíguo entre Wi-Fi e fibra: testa a linha, declara a leitura e orienta teste por cabo, sem escrita"
+  },
+  {
+    "id": 10,
+    "rotulo": "caso_fora_do_escopo",
+    "chave": "ESC",
+    "contrato": "C001",
+    "mensagem": "Quero cancelar meu plano e pedir um desconto.",
+    "acao_esperada": "escalar",
+    "porque": "cobrança e cancelamento não são do agente técnico: triagem em código encaminha para o atendente",
+    "suficiente_esperado": false
+  }
+]

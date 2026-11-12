@@ -1,10 +1,3 @@
-"""
-Fronteira com o modelo. O grafo só conhece `ClienteLLM.chamar`, então os
-testes trocam o modelo por `LLMSimulado` e rodam sem rede.
-
-Erros: RateLimit, conexão e timeout são recuperáveis (nova tentativa com
-espera); qualquer outro erro é fatal e vira motivo de término.
-"""
 import json
 import os
 import time
@@ -57,7 +50,12 @@ class ClienteLLM:
         if self._client is None:
             from openai import OpenAI
 
-            self._client = OpenAI(base_url=os.environ["LLM_BASE_URL"], api_key=os.environ["OPENAI_API_KEY"])
+            self._client = OpenAI(
+                base_url=os.environ["LLM_BASE_URL"],
+                api_key=os.environ["OPENAI_API_KEY"],
+                timeout=config.TEMPO_MAXIMO_CHAMADA_LLM,
+                max_retries=0,  # as tentativas são controladas abaixo, sem retry duplo do SDK
+            )
         return self._client
 
     def chamar(self, mensagens: List[dict], ferramentas: List[dict]) -> RespostaLLM:
@@ -72,11 +70,14 @@ class ClienteLLM:
                     tools=ferramentas,
                     temperature=config.TEMPERATURE,
                     max_tokens=config.MAX_TOKENS_RESPOSTA,
+                    timeout=config.TEMPO_MAXIMO_CHAMADA_LLM,
                 )
                 break
             except recuperaveis as erro:
                 if tentativa == config.TENTATIVAS_LLM:
-                    raise ErroLLMFatal(f"esgotou {tentativa} tentativas: {type(erro).__name__}") from erro
+                    raise ErroLLMFatal(
+                        f"esgotou {tentativa} tentativas: {type(erro).__name__}: {erro}"
+                    ) from erro
                 self._esperar(2 ** tentativa)
             except Exception as erro:  # autenticação, requisição inválida etc.
                 raise ErroLLMFatal(f"{type(erro).__name__}: {erro}") from erro

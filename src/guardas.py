@@ -1,7 +1,3 @@
-"""
-Guardas do laço (enunciado §3.2): taxonomia de términos, orçamento, detector
-de laço e validação de data editada. Tudo em código, nada pedido ao modelo.
-"""
 import datetime
 import json
 from typing import List, Optional
@@ -13,11 +9,11 @@ MOTIVOS = {
     "resposta_final": ("o modelo respondeu sem pedir mais ferramentas", False),
     "encaminhado_humano": ("assunto fora do suporte técnico, decidido pela triagem", True),
     "entrada_incompleta": ("a mensagem não descreve nenhum sintoma; o sistema pede detalhes sem chamar o modelo", False),
-    "limite_de_voltas": (f"mais de {config.MAX_VOLTAS_AGENTE} chamadas ao modelo", True),
-    "limite_de_ferramentas": (f"mais de {config.MAX_PASSOS_FERRAMENTA} chamadas de ferramenta", True),
-    "laco_detectado": (f"mesma ferramenta e mesmos argumentos {config.REPETICOES_PARA_LACO} vezes sem mudança no estado", True),
-    "tempo_esgotado": (f"mais de {config.TETO_SEGUNDOS}s de tempo de máquina", True),
-    "tokens_esgotados": (f"mais de {config.TETO_TOKENS} tokens", True),
+    "limite_de_voltas": (f"limite de {config.MAX_VOLTAS_AGENTE} chamadas ao modelo atingido", True),
+    "limite_de_ferramentas": (f"limite de {config.MAX_PASSOS_FERRAMENTA} chamadas de ferramenta atingido", True),
+    "laco_detectado": (f"tentativa de repetir a mesma ferramenta e argumentos pela {config.REPETICOES_PARA_LACO}ª vez sem mudança no estado", True),
+    "tempo_esgotado": (f"limite de {config.TETO_SEGUNDOS}s acumulados em chamadas ao modelo atingido", True),
+    "tokens_esgotados": (f"limite de {config.TETO_TOKENS} tokens acumulados atingido", True),
     "aprovacao_expirada": ("o cliente não respondeu à aprovação no prazo", True),
     "erro_fatal_llm": ("erro do modelo que repetir não resolve", True),
     "recursion_limit": (f"o grafo passou de {config.RECURSION_LIMIT} passos", True),

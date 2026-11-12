@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-11-11T22:11:51",
+  "commit": "849dad9",
+  "versao_sistema": "3.1.0",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:3a265f26",
+  "trace_id": "29a9f8df03eab5edc3a00399cea22cb6",
+  "contrato": "C001",
+  "mensagem_inicial": "A partir de quantos dBm o sinal é considerado falha física?",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "erro_llm",
+      "detalhe": "esgotou 3 tentativas: RateLimitError"
+    },
+    {
+      "tipo": "transbordo",
+      "motivo": "erro_fatal_llm"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "b2051902a1421ff2",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 0,
+  "tokens": 0,
+  "segundos_ativos": 0.0,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "erro_fatal_llm",
+  "saida": {
+    "resultado": "Não consegui concluir seu atendimento por aqui. Vou encaminhar você para um atendente humano, com o que já foi verificado.",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "erro_fatal_llm",
+    "encaminhar_humano": true,
+    "motivo_parada": "erro_fatal_llm",
+    "citacoes_invalidas": []
+  }
+}

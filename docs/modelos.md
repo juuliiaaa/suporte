@@ -115,45 +115,37 @@ minuto da Groq se mostrar baixo demais para o volume de teste do grupo —
 aí tentaríamos o Mistral Small de novo, desta vez já sabendo que é preciso
 ativar o Pay-as-you-go antes de testar.
 
-## 5. Credenciais, gasto, região e retenção na Groq
+## 5. Dados, credencial e limites do provedor
 
-Esta seção fecha as lacunas L03, L04 e L05 do `exercicios/model-card.md`
-na parte que depende da documentação pública do provedor, não de código.
+O modelo escolhido é chamado pela API da **Groq**, usando o cliente compatível
+com a API OpenAI. O endpoint, a chave e o identificador do modelo são
+configurados por `LLM_BASE_URL`, `OPENAI_API_KEY` e `LLM_MODEL`; a chave fica
+apenas no `.env`, que é ignorado pelo Git.
 
-**Limite de gasto (L04).** A conta usada é do tier gratuito da Groq, sem
-forma de pagamento cadastrada. Segundo a documentação oficial
-(console.groq.com/docs/spend-limits), o teto de gasto configurável em
-Settings → Billing → Limits só existe nos planos pagos — "spending limits
-são disponíveis só em planos pagos, não em contas do tier gratuito". Como
-não há cartão associado, não existe caminho para a execução gerar
-cobrança: o teto efetivo é zero por construção da conta, não por um limite
-configurado. Quem mantiver o repositório deve conferir, uma vez, em
-Settings → Billing, que nenhuma forma de pagamento foi adicionada à conta
-— é uma checagem de um minuto, não uma investigação.
+Informações registradas pelo grupo a partir da documentação da Groq e da
+configuração da conta usada nos testes (outubro de 2026):
 
-**Privilégio da credencial (L03).** A Groq não oferece, no tier gratuito,
-escopo granular por chave (por exemplo, restringir uma chave a um modelo
-ou a uma operação específica) — a chave de API vale para toda a conta. O
-`.env.example` documenta isso: a variável `OPENAI_API_KEY` é a chave de
-conta inteira, não uma chave de escopo reduzido, e deve ser tratada e
-revogada como tal se vazar.
+| Tema | O que foi verificado | Limite ou ressalva |
+|---|---|---|
+| Plano e cobrança | A conta utilizada estava no tier gratuito e, na verificação registrada, não tinha forma de pagamento cadastrada. | A confirmação em Settings → Billing continua sendo uma checagem manual do titular da conta; não é comprovada pelo código. |
+| Limite de gasto | A documentação consultada descreve limites de gasto configuráveis para planos pagos. | Não há teto de gasto configurável comprovado para o tier gratuito usado. |
+| Escopo da chave | No tier consultado, a chave não oferece escopo granular por ferramenta ou recurso. | Se a chave vazar, a resposta operacional é revogá-la/rotacioná-la no provedor. |
+| Região | A documentação consultada informa processamento/armazenamento de dados de monitoramento nos Estados Unidos. | Não há residência de dados no Brasil demonstrada nesta configuração. |
+| Retenção | Por padrão, dados de inferência não são retidos; o monitoramento de confiabilidade/abuso pode reter dados por até 30 dias e há opção Zero Data Retention. | A configuração efetiva de ZDR da conta precisa ser conferida no painel; não é inferida do endpoint. |
+| Uso para treinamento | A documentação consultada pelo grupo não permitiu confirmar se os dados enviados são usados para treinamento. | **Lacuna aberta:** não afirmar que há ou não há treinamento sem confirmação contratual/documental. |
+| Limites de requisição/tokens | Há limites por modelo e por plano, que podem mudar. | Não foram medidos sistematicamente nesta documentação; a disponibilidade deve ser conferida na própria conta antes da apresentação. |
 
-**Região de processamento e retenção (L05).** Segundo a documentação
-oficial (console.groq.com/docs/your-data): por padrão a Groq não retém
-dado de requisição de inferência; a exceção é monitoramento de
-confiabilidade e abuso, com entrada e saída guardadas por até 30 dias
-(desativável em Data Controls, com "Zero Data Retention"), e todo esse
-dado fica em buckets do Google Cloud Platform localizados nos Estados
-Unidos. A documentação consultada não afirma, nem num sentido nem no
-outro, se entradas e saídas da API são usadas para treinar modelos — não
-dá para declarar isso sem confirmação direta do provedor, então fica
-registrado como não verificado, e não como "não usa".
+Fontes oficiais consultadas: [limites de gasto da Groq](https://console.groq.com/docs/spend-limits) e
+[tratamento dos dados na Groq](https://console.groq.com/docs/your-data).
+Essas informações são um registro da consulta feita pelo grupo, não uma
+garantia permanente do provedor; devem ser verificadas novamente antes de
+qualquer uso com dados reais.
 
-**O que isso muda no fluxo de dados do `exercicios/model-card.md` §6.3:**
-o contrato, o bairro e o texto da mensagem do cliente que chegam ao
-modelo (passo 3) trafegam para fora do Brasil, para infraestrutura nos
-EUA, e podem ficar retidos por até 30 dias se a conta não tiver Zero Data
-Retention ativado — o que ainda não foi confirmado para a conta deste
-grupo. Isso é dado simulado nesta entrega (`docs/case.md` §2.9), então não
-há dado pessoal real exposto; para uma versão com dados reais, ativar Zero
-Data Retention na Groq deixaria de ser opcional.
+## 5.1 Retenção dos logs locais (implementação)
+
+A retenção local de 30 dias é aplicada por `scripts/limpar_logs_antigos.py`.
+A execução sem argumentos lista os registros que ultrapassaram o prazo e não
+apaga nada. A exclusão requer `--confirmar`. Arquivos sem `timestamp` ISO
+8601 legível são preservados para inspeção manual. A rotina opera apenas em
+`logs/`; não apaga bancos, checkpoints, memória nem logs históricos fora dessa
+pasta.

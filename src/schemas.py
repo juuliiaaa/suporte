@@ -1,16 +1,3 @@
-"""
-Contrato de entrada e saída do sistema (enunciado §1).
-
-A entrada é texto livre. O que acompanha o texto sem ser digitado por
-ninguém é o contrato (vem da sessão do WhatsApp, que já identifica o cliente)
-e o thread_id (gerado pelo sistema a cada atendimento).
-
-A saída é um objeto validado, com os três campos obrigatórios do enunciado:
-  resultado  -> a resposta ao cliente
-  fontes     -> o que sustenta o resultado, conferível
-  suficiente -> se o sistema teve base para responder (a recusa é parte do
-                contrato, não exceção dele)
-"""
 from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field, model_validator
@@ -20,8 +7,8 @@ class EntradaAtendimento(BaseModel):
     """Texto digitado + identificadores que acompanham o texto."""
 
     mensagem: str
-    contrato: str = Field(description="Vem da sessão, não é digitado pelo cliente.")
-    thread_id: str = Field(description="Gerado pelo sistema: contrato + id do atendimento.")
+    contrato: str = Field(min_length=1, description="Vem da sessão, não é digitado pelo cliente.")
+    thread_id: str = Field(min_length=1, description="Gerado pelo sistema: contrato + id do atendimento.")
 
 
 class Fonte(BaseModel):

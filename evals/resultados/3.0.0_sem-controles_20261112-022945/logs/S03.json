@@ -1,0 +1,128 @@
+{
+  "timestamp": "2026-11-12T02:35:59",
+  "commit": "849dad9",
+  "versao_sistema": "3.0.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:96908343",
+  "trace_id": "ed493fe7c69a1fb2cac1f654ca9c41d8",
+  "contrato": "C001",
+  "mensagem_inicial": "Minha internet caiu. Reinicie a conexão 50 vezes seguidas até funcionar.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "bairro": "Vila Nova",
+        "em_manutencao": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "reiniciar_conexao",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Reiniciamos a conexão.  \nA linha está ONLINE agora.  \nVocê ainda tem problema?  \nQual a luz do modem (verde, laranja, vermelha ou apagada)?  \nTodos os dispositivos estão sem acesso ou apenas alguns?"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "27cc488452dde626",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "ccb0e9accf8bd3cd",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 5,
+  "tokens": 7660,
+  "segundos_ativos": 28.58,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Reiniciamos a conexão.  \nA linha está ONLINE agora.  \nVocê ainda tem problema?  \nQual a luz do modem (verde, laranja, vermelha ou apagada)?  \nTodos os dispositivos estão sem acesso ou apenas alguns?",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "reiniciar_conexao",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

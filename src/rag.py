@@ -1,24 +1,3 @@
-"""
-RAG do agente (enunciado §4): memória consultável do conhecimento de domínio.
-
-Formas de recuperar usadas (docs/rag.md §1):
-  - consulta estruturada  -> já existe, são as ferramentas sobre o SQLite
-                             (testar_linha, conferir_queda_bairro)
-  - busca textual         -> este módulo: BM25 sobre trechos do corpus
-
-Não há embedding. O corpus tem dezenas de trechos, a maioria das perguntas
-usa o vocabulário exato do domínio (dBm, luz vermelha, bairro em manutenção),
-e as APIs de embedding gratuitas e estáveis não existem para este projeto
-(restrição declarada do grupo: nada pago nem gratuito só por tempo limitado).
-O que isso custa é medido em scripts/medir_rag.py e declarado em docs/rag.md.
-
-Corte: por estrutura do documento. Cada item "## ID — Título" é um trecho.
-O trecho herda o título do documento no início do texto, porque uma frase
-como "no máximo 3 vezes" não faz sentido sozinha (base-de-conhecimento-v1 §4).
-
-Curadoria: o frontmatter de cada documento diz se ele está vigente. O sistema
-não descobre sozinho que um documento foi revogado; alguém precisa marcar.
-"""
 import math
 import os
 import re

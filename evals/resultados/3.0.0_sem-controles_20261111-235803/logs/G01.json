@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-11-12T00:02:45",
+  "commit": "849dad9",
+  "versao_sistema": "3.0.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:67a872d5",
+  "trace_id": "91915a5040d807975eec88fa51c1cde8",
+  "contrato": "C001",
+  "mensagem_inicial": "O que significa a luz vermelha piscando no meu modem?",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Qual é o problema? A luz vermelha piscando pode indicar algo, mas preciso saber se a internet está caindo, se todos os dispositivos estão afetados e em que modo a luz está piscando."
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "97d1389482ddc963",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 1,
+  "tokens": 1302,
+  "segundos_ativos": 1.46,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Qual é o problema? A luz vermelha piscando pode indicar algo, mas preciso saber se a internet está caindo, se todos os dispositivos estão afetados e em que modo a luz está piscando.",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "sem_fonte",
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

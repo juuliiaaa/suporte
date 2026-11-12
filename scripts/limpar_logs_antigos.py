@@ -1,81 +1,50 @@
-"""
-Remove de logs/ os registros de atendimento mais antigos que o prazo de
-retenção local.
-
-Por que 30 dias: exercicios/model-card.md §6.2 lista o que cada log em
-logs/caso_<contrato>.json pode conter (contrato, bairro e o texto da
-mensagem do cliente). Os dados são simulados, mas não havia, até esta
-versão, nenhum prazo declarado para esses arquivos — a lacuna L07. O
-prazo escolhido aqui acompanha o que o Groq, o provedor do modelo, já faz
-sozinho com os próprios logs de confiabilidade e abuso (até 30 dias,
-ver docs/modelos.md §5): não faz sentido este repositório guardar por
-mais tempo um dado que o próprio provedor do modelo já descarta.
-
-Isto não é um job agendado — é um comando que quem mantém o repositório
-roda manualmente ou a partir de uma rotina (cron, GitHub Action) de fora
-deste projeto.
-
-Uso:
-    python3 -m scripts.limpar_logs_antigos             # remove o que venceu
-    python3 -m scripts.limpar_logs_antigos --simular    # só lista, não apaga
-    python3 -m scripts.limpar_logs_antigos --prazo 15   # outro prazo em dias
-"""
+"""Aplica a retenção local de logs; exige confirmação para apagar arquivos."""
 import argparse
-import datetime
+import datetime as dt
 import json
-import os
+from pathlib import Path
 
-PRAZO_DIAS_PADRAO = 30
-PASTA_LOGS = os.path.join(os.path.dirname(__file__), "..", "logs")
+from src import config
 
 
-def logs_vencidos(pasta: str = PASTA_LOGS, prazo_dias: int = PRAZO_DIAS_PADRAO) -> list:
-    """Retorna o caminho dos logs mais antigos que o prazo. A data usada é
-    o campo "timestamp" gravado pelo próprio src/agent.py; se o arquivo
-    não tiver esse campo (log corrompido ou de formato antigo), cai para
-    a data de modificação do arquivo no disco."""
-    limite = datetime.datetime.now() - datetime.timedelta(days=prazo_dias)
-    vencidos = []
-    if not os.path.isdir(pasta):
-        return vencidos
-    for nome in sorted(os.listdir(pasta)):
-        if not nome.endswith(".json"):
-            continue
-        caminho = os.path.join(pasta, nome)
+def candidatos(dias: int, agora=None):
+    agora = agora or dt.datetime.now()
+    limite = agora - dt.timedelta(days=dias)
+    encontrados = []
+    pasta = Path(config.PASTA_LOGS)
+    if not pasta.exists():
+        return encontrados
+    for caminho in sorted(pasta.glob("*.json")):
         try:
-            with open(caminho, encoding="utf-8") as arquivo:
-                registro = json.load(arquivo)
-            timestamp = datetime.datetime.fromisoformat(registro["timestamp"])
-        except (OSError, json.JSONDecodeError, KeyError, ValueError):
-            timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(caminho))
-        if timestamp < limite:
-            vencidos.append(caminho)
-    return vencidos
+            dados = json.loads(caminho.read_text(encoding="utf-8"))
+            marca = dt.datetime.fromisoformat(dados["timestamp"])
+            if marca.tzinfo is not None:
+                marca = marca.astimezone().replace(tzinfo=None)
+        except (OSError, ValueError, KeyError, TypeError):
+            # Não apaga log sem timestamp legível: exige inspeção manual.
+            continue
+        if marca < limite:
+            encontrados.append(caminho)
+    return encontrados
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--simular", action="store_true",
-        help="lista os logs que seriam removidos, sem apagar nenhum",
-    )
-    parser.add_argument(
-        "--prazo", type=int, default=PRAZO_DIAS_PADRAO,
-        help=f"prazo de retenção em dias (padrão: {PRAZO_DIAS_PADRAO})",
-    )
+    parser.add_argument("--dias", type=int, default=30)
+    parser.add_argument("--confirmar", action="store_true", help="autoriza a exclusão dos arquivos listados")
     args = parser.parse_args()
-
-    vencidos = logs_vencidos(prazo_dias=args.prazo)
-    if not vencidos:
-        print(f"Nenhum log passou do prazo de {args.prazo} dias.")
+    if args.dias < 1:
+        parser.error("--dias precisa ser maior que zero")
+    lista = candidatos(args.dias)
+    print(f"{len(lista)} log(s) com mais de {args.dias} dias:")
+    for caminho in lista:
+        print(" ", caminho)
+    if not args.confirmar:
+        print("Simulação: nenhum arquivo foi apagado. Use --confirmar para excluir os listados.")
         return
-
-    for caminho in vencidos:
-        if args.simular:
-            print(f"removeria: {caminho}")
-        else:
-            os.remove(caminho)
-            print(f"removido: {caminho}")
+    for caminho in lista:
+        caminho.unlink()
+    print(f"Removidos: {len(lista)}")
 
 
 if __name__ == "__main__":

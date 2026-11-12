@@ -65,7 +65,7 @@ O agendamento é idempotente: a chave deriva de contrato e data (`sha256(contrat
 | primeira | `C004:3c17344b` | `{"contrato": "C004", "data": "2026-10-22", "status": "AGENDADA", "ja_existia": false}` |
 | segunda | `C004:23eb916f` | `{"contrato": "C004", "data": "2026-10-22", "status": "AGENDADA", "ja_existia": true}` |
 
-A segunda chamada reconheceu a visita pela chave e não criou nada. O `gerar_io` só escreve a prova se a primeira execução devolveu `ja_existia=false`; caso contrário avisa que o banco precisa ser zerado (`python -m scripts.rodar_casos --reset C004 C004B`).
+A segunda chamada reconheceu a visita pela chave e não criou nada. Para repetir o cenário com o modelo real sem alterar os bancos do projeto, execute `python -m scripts.rodar_casos C004 C004B`: o script usa bancos temporários compartilhados entre os dois casos e preserva os logs históricos com nomes novos.
 
 Também sem modelo, `python -m scripts.demo_idempotencia` mostra o mesmo no nível da ferramenta:
 

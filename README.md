@@ -35,13 +35,15 @@ Python **3.13** (o 3.14 quebra o `pydantic_core`). Os comandos abaixo são do
 PowerShell; no Linux e no macOS, troque a ativação por `source .venv/bin/activate`.
 
 ```powershell
-git clone <url-do-repo>
-cd <pasta-do-repo>
+git clone https://github.com/MariaCoelhoM/Agente_de_llm.git
+cd Agente_de_llm
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt --retries 10 --timeout 60
 copy .env.example .env
-# editem o .env com LLM_BASE_URL, OPENAI_API_KEY e LLM_MODEL (nunca commitem o .env)
+# editem .env: LLM_BASE_URL=https://api.groq.com/openai/v1
+# OPENAI_API_KEY=<sua-chave> e LLM_MODEL=qwen/qwen3.8-27b
+# Nunca compartilhem nem commitem a chave ou o arquivo .env.
 python -m src.db          # cria o banco simulado
 python -m src.agent C001 "minha internet caiu"
 ```
@@ -91,23 +93,46 @@ usadas, o motivo de parada e o caminho do log. Em `logs/caso_<contrato>.json`
 chamada, argumentos e resultado), as pausas de aprovação, o commit, os
 prompts em uso e a resposta final.
 
-**Exemplo real** (copiado de `logs/caso_C001_feliz.json`, gerado por `python -m scripts.gerar_io`):
+**Exemplo real** (entrada e saída completas, copiadas do log):
 <!-- EXEMPLO:INICIO -->
-```
-$ python -m src.agent C001 "A luz do modem está piscando vermelha e a internet caiu."
-Resposta: Pronto, a linha voltou a ficar ONLINE e o sinal está estável (-22 dBm). A luz vermelha deve apagar em alguns minutos.
+Entrada digitada: "A luz do modem está piscando vermelha e a internet caiu."
 
-Se a internet cair de novo, me avise que eu rodo o teste outra vez.
-Fontes: [('ferramenta', 'conferir_queda_bairro'), ('ferramenta', 'reiniciar_conexao'), ('ferramenta', 'testar_linha')]  suficiente=True
-Parou por: resposta_final   Log: logs/caso_C001_feliz.json
+Saída completa validada:
+
+```json
+{
+  "resultado": "Pronto, a linha voltou a ficar ONLINE e o sinal está estável (-22 dBm). A luz vermelha deve apagar em alguns minutos.\n\nSe a internet cair de novo, me avise que eu rodo o teste outra vez.",
+  "fontes": [
+    {
+      "tipo": "ferramenta",
+      "id": "conferir_queda_bairro",
+      "detalhe": null
+    },
+    {
+      "tipo": "ferramenta",
+      "id": "reiniciar_conexao",
+      "detalhe": null
+    },
+    {
+      "tipo": "ferramenta",
+      "id": "testar_linha",
+      "detalhe": null
+    }
+  ],
+  "suficiente": true,
+  "motivo_insuficiencia": null,
+  "encaminhar_humano": false,
+  "motivo_parada": "resposta_final",
+  "citacoes_invalidas": []
+}
 ```
-Nesta execução o grafo não precisou pausar (nenhuma visita foi proposta).
-Commit 8b9fd3d, 2026-10-19T01:38:50.
+
+Execução registrada em `2026-10-19T01:38:50`, commit `8b9fd3d`.
 <!-- EXEMPLO:FIM -->
 
 **O que o sistema não faz:** não responde sobre cobrança, fatura ou
-cancelamento (escala para humano); não inventa resposta fora do manual (recusa
-e oferece um atendente); não agenda visita sem a aprovação do cliente; não
+cancelamento (informa o encaminhamento para humano, sem abrir chamado real);
+não inventa resposta fora do manual (recusa e oferece encaminhamento); não agenda visita sem a aprovação do cliente; não
 agenda visita individual se o bairro estiver em manutenção. Se passar de 6
 voltas, 8 chamadas de ferramenta, 12000 tokens ou 120 s sem resolver, encerra e
 encaminha para um atendente humano.
@@ -118,8 +143,8 @@ Precisam do modelo real (`.env` preenchido). Os rótulos são C001, C002, C999,
 C005, FORA, C004, C004B, INC, AMB e ESC (10 casos); sem argumentos rodam todos.
 
 ```powershell
-python -m scripts.rodar_casos --reset   # 10 casos com o modelo real, logs em logs/
-python -m scripts.rodar_casos --reset C004 C004B   # só a prova de aprovação repetida
+python -m scripts.rodar_casos                 # 10 casos com o modelo real, bancos temporários
+python -m scripts.rodar_casos C004 C004B       # prova de aprovação repetida, sem apagar bancos locais
 python -m scripts.gerar_io              # monta docs/io.md e atualiza o exemplo deste README
 python -m scripts.experimento_frase 5   # remove uma frase do prompt, 5 execuções por variante
 ```
@@ -136,10 +161,13 @@ python -m scripts.demo_remocao          # grava, varre, remove e varre de novo
 
 ## Limpeza de logs antigos
 
-Os logs em `logs/` seguem um prazo de retenção de 30 dias (justificativa
-em `docs/modelos.md` §5). Para aplicar:
+Os logs locais têm retenção configurável (padrão: 30 dias). A limpeza sempre
+começa em modo de simulação; a exclusão exige a confirmação explícita:
 
 ```powershell
-python -m scripts.limpar_logs_antigos --simular   # só lista o que seria removido
-python -m scripts.limpar_logs_antigos             # remove de fato
+python -m scripts.limpar_logs_antigos
+python -m scripts.limpar_logs_antigos --confirmar
 ```
+
+Logs sem timestamp válido não são apagados automaticamente. Os logs
+históricos versionados nesta entrega são registros acadêmicos sintéticos.

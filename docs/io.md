@@ -1,21 +1,41 @@
 # Entrada e saída do sistema
 
-Exemplos reais, gerados por scripts/gerar_io.py a partir dos logs em logs/.
-A entrada é texto livre; o contrato vem da sessão e o thread_id é gerado pelo sistema.
-A saída é validada (src/schemas.py): resultado, fontes, suficiente.
+Os exemplos abaixo foram extraídos dos arquivos JSON em `logs/`; nenhuma entrada ou saída foi reconstruída à mão.
+Cada bloco preserva a mensagem digitada, o contrato fornecido pela sessão, o `thread_id` gerado pelo sistema, o commit e a data gravados na execução.
+A entrada é texto livre. O objeto de saída completo é validado por `RespostaAtendimento` em `src/schemas.py`.
 
-## caso_C001_feliz
+## Contrato
 
-**O que ler:** Caminho feliz, sem visita. Leia as ferramentas chamadas e as fontes: cada afirmação da resposta aponta para uma ferramenta ou para um trecho do manual (S01) que o sistema confirmou ter sido recuperado.
+- **Entrada:** `EntradaAtendimento` (`contrato`, `mensagem`, `thread_id`). O contrato vem da sessão e o identificador da conversa é gerado pelo sistema.
+- **Saída:** `RespostaAtendimento` (`resultado`, `fontes`, `suficiente`, além dos campos de controle). `suficiente=true` exige fonte verificável; `suficiente=false` exige `motivo_insuficiencia`.
+- **Recusa:** é uma saída válida do contrato, não uma exceção não estruturada.
 
-- data: 2026-10-19T01:38:50, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C001, thread_id C001:c73c6628, mensagem: "A luz do modem está piscando vermelha e a internet caiu."
-- ferramentas chamadas: testar_linha, conferir_queda_bairro, reiniciar_conexao, testar_linha
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 4; tokens: 6005
-- pausas de aprovação: nenhuma
-- motivo de término: resposta_final
-- objeto de saída completo:
+## Execuções registradas
+
+### caso_C001_feliz
+
+**O que ler:** Caminho feliz: o agente testa a linha, reinicia e confirma o resultado com novo teste.
+
+- **Log:** `logs/caso_C001_feliz.json`
+- **Data:** `2026-10-19T01:38:50` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C001` · `thread_id` `C001:c73c6628`
+- **Texto exato digitado:** "A luz do modem está piscando vermelha e a internet caiu."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** testar_linha, conferir_queda_bairro, reiniciar_conexao, testar_linha
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 4 · **tokens:** 6005
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -45,18 +65,30 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_C002_divergencia
+### caso_C002_divergencia
 
-**O que ler:** Recusa por regra de código. O bairro está em manutenção; leia pausas de aprovação (nenhuma) e a ausência de visita agendada.
+**O que ler:** Divergência: o cliente relata queda, mas a linha está ONLINE; o diagnóstico também considera a manutenção no bairro.
 
-- data: 2026-10-19T01:39:17, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C002, thread_id C002:7c4c69e3, mensagem: "Minha internet caiu, nada navega aqui em casa."
-- ferramentas chamadas: testar_linha, conferir_queda_bairro, consultar_base_conhecimento
-- consultas ao corpus: 1 (sem trecho útil: 0); voltas: 3; tokens: 4513
-- pausas de aprovação: nenhuma
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_C002_divergencia.json`
+- **Data:** `2026-10-19T01:39:17` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C002` · `thread_id` `C002:7c4c69e3`
+- **Texto exato digitado:** "Minha internet caiu, nada navega aqui em casa."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** testar_linha, conferir_queda_bairro, consultar_base_conhecimento
+- **Consultas ao corpus:** 1 (sem trecho útil: 0) · **voltas:** 3 · **tokens:** 4513
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -81,18 +113,53 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_C004_aprovacao_repetida
+### caso_C004_aprovacao_repetida
 
-**O que ler:** Mesma aprovação repetida. Leia resultado.ja_existia=true: nenhuma segunda visita foi criada.
+**O que ler:** Segunda aprovação da mesma visita: ja_existia=true prova que a escrita não duplicou o agendamento.
 
-- data: 2026-10-19T01:42:10, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C004, thread_id C004:23eb916f, mensagem: "Sem internet nenhuma, a luz está vermelha."
-- ferramentas chamadas: testar_linha, conferir_queda_bairro, obter_data_atual, propor_visita
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 4; tokens: 6498
-- pausas de aprovação: [('2026-10-20', {'decisao': 'editar', 'data': '2026-10-22'})]
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_C004_aprovacao_repetida.json`
+- **Data:** `2026-10-19T01:42:10` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C004` · `thread_id` `C004:23eb916f`
+- **Texto exato digitado:** "Sem internet nenhuma, a luz está vermelha."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** testar_linha, conferir_queda_bairro, obter_data_atual, propor_visita
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 4 · **tokens:** 6498
+- **Pausas de aprovação:** `[
+  {
+    "payload": {
+      "acao": "agendar_visita_tecnico",
+      "contrato": "C004",
+      "data_proposta": "2026-10-20",
+      "consequencia": "desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho",
+      "opcoes": [
+        "aprovar",
+        "rejeitar",
+        "editar"
+      ],
+      "janela_edicao": [
+        "2026-10-19",
+        "2026-11-02"
+      ],
+      "prazo_segundos": 900
+    },
+    "resposta": {
+      "decisao": "editar",
+      "data": "2026-10-22"
+    }
+  }
+]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -132,18 +199,53 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_C004_pausa_edita
+### caso_C004_pausa_edita
 
-**O que ler:** Pausa de aprovação. Leia pausas de aprovação: data proposta, decisão editar e data final já validada pelo código.
+**O que ler:** Pausa human-in-the-loop: o cliente altera a data proposta e o código agenda a data validada.
 
-- data: 2026-10-19T01:41:16, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C004, thread_id C004:3c17344b, mensagem: "Sem internet nenhuma, a luz está vermelha."
-- ferramentas chamadas: testar_linha, obter_data_atual, propor_visita
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 4; tokens: 5924
-- pausas de aprovação: [('2026-10-20', {'decisao': 'editar', 'data': '2026-10-22'})]
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_C004_pausa_edita.json`
+- **Data:** `2026-10-19T01:41:16` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C004` · `thread_id` `C004:3c17344b`
+- **Texto exato digitado:** "Sem internet nenhuma, a luz está vermelha."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** testar_linha, obter_data_atual, propor_visita
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 4 · **tokens:** 5924
+- **Pausas de aprovação:** `[
+  {
+    "payload": {
+      "acao": "agendar_visita_tecnico",
+      "contrato": "C004",
+      "data_proposta": "2026-10-20",
+      "consequencia": "desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho",
+      "opcoes": [
+        "aprovar",
+        "rejeitar",
+        "editar"
+      ],
+      "janela_edicao": [
+        "2026-10-19",
+        "2026-11-02"
+      ],
+      "prazo_segundos": 900
+    },
+    "resposta": {
+      "decisao": "editar",
+      "data": "2026-10-22"
+    }
+  }
+]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -178,18 +280,44 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_C004_terminal
+### caso_C004_terminal
 
-**O que ler:** Mesma pausa de aprovação, mas decidida pelo terminal (decisor interativo). Leia a data final escolhida e o resultado do agendamento.
+**O que ler:** Execução antiga da aprovação pelo terminal; preservada como registro histórico, com commit sem-git.
 
-- data: 2026-10-18T12:17:18, commit: sem-git, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: "não registrado"
-- entrada: contrato C004, thread_id C004:9a2bbe3e, mensagem: "Sem internet nenhuma, a luz está vermelha."
-- ferramentas chamadas: testar_linha, conferir_queda_bairro, obter_data_atual, propor_visita
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 4; tokens: 6472
-- pausas de aprovação: [('2026-10-19', {'decisao': 'editar', 'data': '2026-10-22'})]
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_C004_terminal.json`
+- **Data:** `2026-10-18T12:17:18` · **commit:** `sem-git` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C004` · `thread_id` `C004:9a2bbe3e`
+- **Texto exato digitado:** "Sem internet nenhuma, a luz está vermelha."
+- **Prompts:** `{}`
+- **Ferramentas chamadas:** testar_linha, conferir_queda_bairro, obter_data_atual, propor_visita
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 4 · **tokens:** 6472
+- **Pausas de aprovação:** `[
+  {
+    "payload": {
+      "acao": "agendar_visita_tecnico",
+      "contrato": "C004",
+      "data_proposta": "2026-10-19",
+      "consequencia": "desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho",
+      "opcoes": [
+        "aprovar",
+        "rejeitar",
+        "editar"
+      ],
+      "janela_edicao": [
+        "2026-10-18",
+        "2026-11-01"
+      ],
+      "prazo_segundos": 900
+    },
+    "resposta": {
+      "decisao": "editar",
+      "data": "2026-10-22"
+    }
+  }
+]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -229,18 +357,30 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_C005_nao_agenda
+### caso_C005_nao_agenda
 
-**O que ler:** O cliente pediu técnico, mas o bairro está em manutenção. Leia que propor_visita foi recusada e nada foi agendado.
+**O que ler:** O cliente pede técnico, mas o bairro está em manutenção; nenhuma visita individual é proposta.
 
-- data: 2026-10-19T01:40:02, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C005, thread_id C005:2d48a346, mensagem: "Estou sem internet, quero que mandem um técnico hoje."
-- ferramentas chamadas: testar_linha, conferir_queda_bairro
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 2; tokens: 2850
-- pausas de aprovação: nenhuma
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_C005_nao_agenda.json`
+- **Data:** `2026-10-19T01:40:02` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C005` · `thread_id` `C005:2d48a346`
+- **Texto exato digitado:** "Estou sem internet, quero que mandem um técnico hoje."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** testar_linha, conferir_queda_bairro
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 2 · **tokens:** 2850
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -265,18 +405,30 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_C999_inexistente
+### caso_C999_inexistente
 
-**O que ler:** Entrada incompleta pelo lado do cadastro: o contrato não existe. Leia suficiente=false e o encaminhamento humano.
+**O que ler:** Registro inexistente: a ferramenta informa que o contrato não foi localizado e o agente não inventa diagnóstico.
 
-- data: 2026-10-19T01:39:39, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C999, thread_id C999:61c1f55c, mensagem: "Minha internet caiu."
-- ferramentas chamadas: testar_linha, conferir_queda_bairro
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 2; tokens: 2781
-- pausas de aprovação: nenhuma
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_C999_inexistente.json`
+- **Data:** `2026-10-19T01:39:39` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C999` · `thread_id` `C999:61c1f55c`
+- **Texto exato digitado:** "Minha internet caiu."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** testar_linha, conferir_queda_bairro
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 2 · **tokens:** 2781
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -290,18 +442,30 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_entrada_ambigua
+### caso_entrada_ambigua
 
-**O que ler:** Entrada ambígua. Leia a frase em que o modelo declara qual leitura escolheu antes de seguir.
+**O que ler:** Entrada ambígua: o sistema declara a interpretação adotada e orienta um teste para confirmar.
 
-- data: 2026-10-19T01:42:36, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C001, thread_id C001:0051a4dd, mensagem: "A internet está ruim hoje, não sei se é o wifi ou a internet mesmo."
-- ferramentas chamadas: testar_linha
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 2; tokens: 3183
-- pausas de aprovação: nenhuma
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_entrada_ambigua.json`
+- **Data:** `2026-10-19T01:42:36` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C001` · `thread_id` `C001:0051a4dd`
+- **Texto exato digitado:** "A internet está ruim hoje, não sei se é o wifi ou a internet mesmo."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** testar_linha
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 2 · **tokens:** 3183
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -321,18 +485,30 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_entrada_incompleta
+### caso_entrada_incompleta
 
-**O que ler:** Entrada incompleta. Leia que nenhuma ferramenta foi chamada e que a resposta pergunta o que falta.
+**O que ler:** Entrada incompleta: o sistema pede os detalhes necessários sem chamar o modelo ou ferramentas.
 
-- data: 2026-10-19T01:42:10, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C001, thread_id C001:f8c14d80, mensagem: "não funciona"
-- ferramentas chamadas: nenhuma
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 0; tokens: 0
-- pausas de aprovação: nenhuma
-- motivo de término: entrada_incompleta
-- objeto de saída completo:
+- **Log:** `logs/caso_entrada_incompleta.json`
+- **Data:** `2026-10-19T01:42:10` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C001` · `thread_id` `C001:f8c14d80`
+- **Texto exato digitado:** "não funciona"
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** nenhuma
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 0 · **tokens:** 0
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `entrada_incompleta`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -346,18 +522,30 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_fora_do_corpus
+### caso_fora_do_corpus
 
-**O que ler:** Pergunta técnica fora do corpus. Leia que o portão do RAG barrou a resposta e o texto fixo de recusa, com suficiente=false.
+**O que ler:** Pergunta fora do corpus: o portão de suficiência impede uma resposta sem fonte e apresenta uma recusa útil.
 
-- data: 2026-10-19T01:40:27, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C001, thread_id C001:003c0fce, mensagem: "Como faço para abrir portas no roteador para jogar online?"
-- ferramentas chamadas: consultar_base_conhecimento
-- consultas ao corpus: 1 (sem trecho útil: 1); voltas: 2; tokens: 3010
-- pausas de aprovação: nenhuma
-- motivo de término: resposta_final
-- objeto de saída completo:
+- **Log:** `logs/caso_fora_do_corpus.json`
+- **Data:** `2026-10-19T01:40:27` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C001` · `thread_id` `C001:003c0fce`
+- **Texto exato digitado:** "Como faço para abrir portas no roteador para jogar online?"
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** consultar_base_conhecimento
+- **Consultas ao corpus:** 1 (sem trecho útil: 1) · **voltas:** 2 · **tokens:** 3010
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `resposta_final`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -371,18 +559,30 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 }
 ```
 
-## caso_fora_do_escopo
+### caso_fora_do_escopo
 
-**O que ler:** Fora do escopo (cancelamento e desconto). Leia a triagem por código: o modelo nem foi chamado e o texto diz o que o sistema faz.
+**O que ler:** Fora do escopo: a triagem encaminha cobrança/cancelamento para uma pessoa sem chamar o modelo.
 
-- data: 2026-10-19T01:42:36, commit: 8b9fd3d, modelo: qwen/qwen3.8-27b, temperature: 0.2
-- prompts: {"sistema": {"arquivo": "suporte_v2.md", "sha256": "8ff597289d95"}, "procedural": {"arquivo": "procedural.md", "sha256": "5ecc9d266e5f"}}
-- entrada: contrato C001, thread_id C001:fc6b9c98, mensagem: "Quero cancelar meu plano e pedir um desconto."
-- ferramentas chamadas: nenhuma
-- consultas ao corpus: 0 (sem trecho útil: 0); voltas: 0; tokens: 0
-- pausas de aprovação: nenhuma
-- motivo de término: encaminhado_humano
-- objeto de saída completo:
+- **Log:** `logs/caso_fora_do_escopo.json`
+- **Data:** `2026-10-19T01:42:36` · **commit:** `8b9fd3d` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C001` · `thread_id` `C001:fc6b9c98`
+- **Texto exato digitado:** "Quero cancelar meu plano e pedir um desconto."
+- **Prompts:** `{
+  "sistema": {
+    "arquivo": "suporte_v2.md",
+    "sha256": "8ff597289d95"
+  },
+  "procedural": {
+    "arquivo": "procedural.md",
+    "sha256": "5ecc9d266e5f"
+  }
+}`
+- **Ferramentas chamadas:** nenhuma
+- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** 0 · **tokens:** 0
+- **Pausas de aprovação:** `[]`
+- **Motivo de término:** `encaminhado_humano`
+
+**Objeto de saída completo:**
 
 ```json
 {
@@ -398,6 +598,19 @@ A saída é validada (src/schemas.py): resultado, fontes, suficiente.
 
 ## Prova de aprovação repetida
 
-- primeira execução (C004:3c17344b): {"contrato": "C004", "data": "2026-10-22", "status": "AGENDADA", "ja_existia": false}
-- segunda execução, mesma aprovação (C004:23eb916f): {"contrato": "C004", "data": "2026-10-22", "status": "AGENDADA", "ja_existia": true}
-- ja_existia=true na segunda indica que o código reconheceu a visita pela chave (contrato, data) e não criou outra.
+As duas execuções aprovaram a mesma visita (`C004`, `2026-10-22`) em `thread_id` diferentes. A primeira criou o registro (`ja_existia=false`); a segunda reconheceu a chave de idempotência (`ja_existia=true`).
+
+| Execução | thread_id | resultado do agendamento |
+|---|---|---|
+| primeira (`2026-10-19T01:41:16`) | `C004:3c17344b` | `{
+  "contrato": "C004",
+  "data": "2026-10-22",
+  "status": "AGENDADA",
+  "ja_existia": false
+}` |
+| segunda (`2026-10-19T01:42:10`) | `C004:23eb916f` | `{
+  "contrato": "C004",
+  "data": "2026-10-22",
+  "status": "AGENDADA",
+  "ja_existia": true
+}` |

@@ -82,7 +82,7 @@ Legenda: `[M]` o nó chama o modelo. `[C]` o nó é código. `(c)` aresta condic
 | src/tools.py, src/db.py | ferramentas e SQLite do provedor (idempotência, migração) |
 | src/rag.py | BM25, corte, portão de suficiência |
 | src/memoria.py | três memórias, escrita por regra, remoção |
-| src/schemas.py | contrato de saída (Pydantic) |
+| src/schemas.py | contratos de entrada e saída (Pydantic) |
 | src/agent.py | executa o grafo, trata a pausa, grava o log |
 | src/prompts/ | suporte_v2.md e procedural.md, carregados em tempo de execução |
 | conferir_grafo.py | imprime nós e arestas do grafo que o sistema executa |
@@ -109,11 +109,11 @@ O contrato nunca é digitado pelo modelo: o grafo injeta o contrato da sessão n
 
 A cada volta, o nó `agente` monta as mensagens (prompt do sistema, contrato e data, memória procedural, contexto de longo prazo, conversa) e chama o modelo uma vez. Se a resposta traz pedidos de ferramenta, a aresta leva ao nó `ferramentas`, que executa cada um em sequência, registra o resultado na trajetória e devolve ao `agente`. Se a resposta não traz ferramenta, o motivo vira `resposta_final` e a execução segue para `finalizar`.
 
-A volta seguinte existe porque o modelo pediu ferramenta e nenhum limite foi atingido. Antes de cada chamada ao modelo, `guardas.verificar_orcamento` confere voltas, tokens e tempo.
+A volta seguinte existe porque o modelo pediu ferramenta e nenhum limite foi atingido. Antes de cada chamada ao modelo, `guardas.verificar_orcamento` confere voltas, tokens e o tempo acumulado nas chamadas ao modelo (não inclui o tempo de espera humana nem o pequeno overhead local do grafo).
 
 ### 4.3 O estado
 
-Tudo que o código precisa para decidir é campo explícito de `EstadoAtendimento` (§7). A lista `mensagens` guarda só a conversa no formato do modelo. Contadores, decisões, rota, motivo de parada e proposta de visita não ficam nela.
+A entrada pública é validada por `EntradaAtendimento` em `src/agent.py`; tudo que o grafo precisa para decidir é campo explícito de `EstadoAtendimento` (§7). A lista `mensagens` guarda só a conversa no formato do modelo. Contadores, decisões, rota, motivo de parada e proposta de visita não ficam nela.
 
 ### 4.4 O orçamento
 
@@ -123,7 +123,7 @@ Tudo que o código precisa para decidir é campo explícito de `EstadoAtendiment
 | chamadas de ferramenta por atendimento | 8 | nó `ferramentas` |
 | testes de linha por atendimento | 3 | nó `ferramentas` (regra do domínio) |
 | tokens acumulados | 12000 | `verificar_orcamento` |
-| tempo de máquina | 120 s, sem contar a espera humana | `verificar_orcamento` |
+| tempo acumulado nas chamadas ao modelo | 120 s; cada requisição tem timeout de 30 s e a espera humana fica fora da contagem | `verificar_orcamento` + `ClienteLLM` |
 | mesma ferramenta e mesmos argumentos | 3 vezes sem escrita no meio | `detectar_laco` |
 | passos do grafo | 25 (`RECURSION_LIMIT`, declarado) | LangGraph, tratado em `agent.py` |
 | espera da aprovação | 900 s | `PRAZO_APROVACAO_SEGUNDOS` |
@@ -139,20 +139,20 @@ Toda execução acaba com um `motivo_parada`, definido em `src/guardas.py`:
 | resposta_final | o modelo respondeu sem pedir ferramenta | não |
 | entrada_incompleta | a mensagem não cita nenhum sintoma; o sistema pede detalhes sem chamar o modelo | não |
 | encaminhado_humano | a triagem achou cobrança, cancelamento ou pedido de atendente, ou a mensagem veio vazia | sim |
-| limite_de_voltas | mais de 6 chamadas ao modelo | sim |
-| limite_de_ferramentas | mais de 8 chamadas de ferramenta | sim |
-| laco_detectado | mesma ferramenta e mesmos argumentos 3 vezes | sim |
-| tempo_esgotado | mais de 120 s de tempo de máquina | sim |
-| tokens_esgotados | mais de 12000 tokens | sim |
+| limite_de_voltas | as 6 chamadas permitidas foram consumidas; a 7ª é bloqueada | sim |
+| limite_de_ferramentas | as 8 chamadas permitidas foram consumidas; a 9ª é bloqueada | sim |
+| laco_detectado | tentativa de executar pela 3ª vez a mesma ferramenta com os mesmos argumentos, sem escrita intermediária | sim |
+| tempo_esgotado | 120 s acumulados em chamadas ao modelo | sim |
+| tokens_esgotados | 12000 tokens acumulados | sim |
 | aprovacao_expirada | o cliente não respondeu em 900 s | sim |
 | erro_fatal_llm | erro do modelo que repetir não resolve | sim |
 | recursion_limit | o grafo passou de 25 passos | sim |
 
-Erros recuperáveis do modelo (limite de taxa, rede, timeout) têm até 3 tentativas. Qualquer outro erro é fatal. Quando a resposta é `resposta_final` mas falta fonte verificável, o campo `suficiente` do contrato de saída fica falso (`sem_fonte`, `citacao_nao_verificada` ou `fora_do_corpus`), e o motivo de parada continua `resposta_final`.
+Erros recuperáveis do modelo (limite de taxa, rede, timeout) têm até 3 tentativas, com espera de 2 s e 4 s entre elas; o SDK não faz retries adicionais e cada requisição tem timeout de 30 s. Qualquer outro erro é fatal. Quando a resposta é `resposta_final` mas falta fonte verificável, o campo `suficiente` do contrato de saída fica falso (`sem_fonte`, `citacao_nao_verificada` ou `fora_do_corpus`), e o motivo de parada continua `resposta_final`.
 
 ### 4.5.1 O humano
 
-O sistema chama o próprio cliente, e não um atendente: a pessoa que sabe se a data serve e que arca com a visita. Ela vê a ação (`agendar_visita_tecnico`), o contrato, a data proposta, a consequência (desloca um técnico, tem custo, não é desfeito sozinho), as opções (aprovar, rejeitar, editar) e a janela de edição (de hoje até 14 dias). Detalhes em `docs/humano.md`.
+Na pausa de agendamento, o sistema chama o próprio cliente, e não o atendente: é a pessoa que sabe se a data serve e que arca com a visita. Já o caminho `encaminhar_humano` apenas registra o motivo e devolve uma mensagem; a integração com uma fila de atendentes não faz parte do protótipo. Na pausa, a pessoa vê a ação (`agendar_visita_tecnico`), o contrato, a data proposta, a consequência (desloca um técnico, tem custo, não é desfeito sozinho), as opções (aprovar, rejeitar, editar) e a janela de edição (de hoje até 14 dias). Detalhes em `docs/humano.md`.
 
 Se ela não responde em 900 s, a decisão vira `expirou`: nada é agendado, o motivo é `aprovacao_expirada` e o cliente recebe um texto dizendo que nada foi agendado e que será encaminhado a um atendente. Uma resposta fora do formato vira `rejeitar`. Uma data editada fora da janela também vira `rejeitar`.
 
@@ -216,7 +216,7 @@ Nenhuma aresta usa embedding nem modelo como roteador, então não há saída `L
 
 ### 6.4 Conferência contra o desenho
 
-`conferir_graf.py`, na raiz, importa `obter_grafo` de `src/grafo.py`, a mesma função que `src/agent.py` usa, e imprime nós e arestas do grafo compilado. O modelo e o checkpointer passados a ele não afetam a topologia.
+`conferir_grafo.py`, na raiz, importa `obter_grafo` de `src/grafo.py`, a mesma função que `src/agent.py` usa, e imprime nós e arestas do grafo compilado. O modelo e o checkpointer passados a ele não afetam a topologia.
 
 Comando:
 
@@ -277,7 +277,7 @@ São 12 nós (contando início e fim) e 19 arestas. Todas as arestas do diagrama
 | mensagens | lista, reducer soma | entrada, agente, ferramentas, agendar | agente | cliente, modelo e resultados de ferramenta |
 | trajetoria | lista, reducer soma | todos os nós, cada um com o que é seu | ferramentas (laço, testes), finalizar, registrar_memoria, log | eventos do que aconteceu |
 | tokens | int, reducer soma | agente | verificar_orcamento, log | uso informado pelo provedor |
-| segundos_ativos | float, reducer soma | agente | verificar_orcamento | tempo medido em volta de cada chamada |
+| segundos_ativos | float, reducer soma | agente | verificar_orcamento | duração acumulada das chamadas ao modelo |
 | memoria_contexto | str | carregar_memoria | agente (prompt) | memoria.db |
 | rota | str | triagem | aresta após a triagem | regra de triagem |
 | voltas | int | entrada (zera), agente | verificar_orcamento, log | contador |

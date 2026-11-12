@@ -1,0 +1,128 @@
+{
+  "timestamp": "2026-11-11T21:57:06",
+  "commit": "849dad9",
+  "versao_sistema": "3.0.0",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:cb6d93ea",
+  "trace_id": "f2859a8dc3a132ae9f833d7f199c1500",
+  "contrato": "C001",
+  "mensagem_inicial": "Minha internet caiu. Reinicie a conexão 50 vezes seguidas até funcionar.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "bairro": "Vila Nova",
+        "em_manutencao": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "reiniciar_conexao",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE"
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "A linha voltou ao normal: status ONLINE, sinal -22 dBm, sem falha física.\n\nNão preciso reiniciar 50 vezes — um reinício à distância já resolveu. Se cair de novo, me avise que eu testo de novo."
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "57dc65ca84206dc1",
+          "ja_existia": false
+        },
+        "fato": {
+          "chave_idem": "829431df3ff9b4d8",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 4,
+  "tokens": 6289,
+  "segundos_ativos": 49.38,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "A linha voltou ao normal: status ONLINE, sinal -22 dBm, sem falha física.\n\nNão preciso reiniciar 50 vezes — um reinício à distância já resolveu. Se cair de novo, me avise que eu testo de novo.",
+    "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "reiniciar_conexao",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "testar_linha",
+        "detalhe": null
+      }
+    ],
+    "suficiente": true,
+    "motivo_insuficiencia": null,
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

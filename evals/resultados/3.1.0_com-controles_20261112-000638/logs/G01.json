@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-11-12T00:10:01",
+  "commit": "849dad9",
+  "versao_sistema": "3.1.0",
+  "modelo": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:2077b673",
+  "trace_id": "0b17dd8f1a4694acae906a8ac851b465",
+  "contrato": "C001",
+  "mensagem_inicial": "O que significa a luz vermelha piscando no meu modem?",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "resposta_final",
+      "conteudo": "Qual é o problema que você está enfrentando?  \n- A internet cai?  \n- Todos os dispositivos ficam sem conexão ou apenas alguns?  \n- A luz vermelha está piscando no modem ou em outro ponto?  \n\nPreciso dessas informações para continuar."
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "97d1389482ddc963",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 1,
+  "tokens": 1350,
+  "segundos_ativos": 0.86,
+  "espera_humana_s": 0.0,
+  "motivo_parada": "resposta_final",
+  "saida": {
+    "resultado": "Qual é o problema que você está enfrentando?  \n- A internet cai?  \n- Todos os dispositivos ficam sem conexão ou apenas alguns?  \n- A luz vermelha está piscando no modem ou em outro ponto?  \n\nPreciso dessas informações para continuar.",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "sem_fonte",
+    "encaminhar_humano": false,
+    "motivo_parada": "resposta_final",
+    "citacoes_invalidas": []
+  }
+}

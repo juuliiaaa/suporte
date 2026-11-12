@@ -1,0 +1,61 @@
+{
+  "timestamp": "2026-11-12T04:35:44",
+  "commit": "sem-git",
+  "modelo": "qwen/qwen3.8-27b",
+  "temperature": 0.2,
+  "prompts": {
+    "sistema": {
+      "arquivo": "suporte_v2.md",
+      "sha256": "846930f9bbfe"
+    },
+    "procedural": {
+      "arquivo": "procedural.md",
+      "sha256": "5ecc9d266e5f"
+    }
+  },
+  "thread_id": "C001:430fa1fb",
+  "contrato": "C001",
+  "mensagem_inicial": "A luz do modem está piscando vermelha e a internet caiu.",
+  "trajetoria": [
+    {
+      "tipo": "memoria",
+      "carregada": false
+    },
+    {
+      "tipo": "triagem",
+      "rota": "suporte"
+    },
+    {
+      "tipo": "erro_llm",
+      "detalhe": "KeyError: 'LLM_BASE_URL'"
+    },
+    {
+      "tipo": "transbordo",
+      "motivo": "erro_fatal_llm"
+    },
+    {
+      "tipo": "memoria_gravada",
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "c3cac1df81683cca",
+          "ja_existia": false
+        }
+      }
+    }
+  ],
+  "pausas_de_aprovacao": [],
+  "voltas": 0,
+  "tokens": 0,
+  "segundos_ativos": 0.0,
+  "motivo_parada": "erro_fatal_llm",
+  "saida": {
+    "resultado": "Não consegui concluir seu atendimento por aqui. Vou encaminhar você para um atendente humano, com o que já foi verificado.",
+    "fontes": [],
+    "suficiente": false,
+    "motivo_insuficiencia": "erro_fatal_llm",
+    "encaminhar_humano": true,
+    "motivo_parada": "erro_fatal_llm",
+    "citacoes_invalidas": []
+  }
+}

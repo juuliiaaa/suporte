@@ -25,11 +25,13 @@ digital, medidos em 10 atendimentos reais no provedor parceiro (ver §2.5).
 **Regras de domínio:**
 - Prazos: resolver problemas simples em menos de 5 minutos pelo chat; se
   precisar de técnico, agendar para no máximo o dia seguinte.
-- Quem pode fazer o quê: o agente só mexe em configuração do sistema
-  (reiniciar o sinal, mudar a senha do Wi-Fi, reconectar a conta). Ações que
-  custam dinheiro ou alteram o contrato (visita técnica, desconto na conta)
-  exigem confirmação explícita do cliente ou aprovação de um funcionário
-  humano.
+- Quem pode fazer o quê: no escopo implementado nesta entrega, o agente pode
+  consultar a linha e o bairro e reiniciar a conexão remotamente. Troca de
+  senha do Wi-Fi e reconexão de conta são possibilidades do case ampliado,
+  mas não estão implementadas nesta versão. Ações que custam dinheiro ou
+  alteram o contrato (como visita técnica e desconto) exigem confirmação
+  explícita ou aprovação humana; nesta entrega, a visita exige aprovação
+  explícita do próprio cliente.
 - Segurança: para mexer na linha do cliente, o sistema precisa confirmar o
   número do contrato antes de agir.
 
@@ -51,6 +53,7 @@ digital, medidos em 10 atendimentos reais no provedor parceiro (ver §2.5).
 | Perfil | O que ele quer | O que ele sabe | O que ele **pode** fazer |
 |---|---|---|---|
 | **Cliente residencial** (usuário principal) | ter a internet de volta sem perder tempo no telefone | só o que vê em casa ("a luz ficou vermelha", "a internet caiu") | descrever o problema, mexer em cabo/tomada, **aprovar** a visita do técnico |
+| Atendente humano da central | receber cobranças, cancelamentos, pedidos de pessoa e casos que o agente não conseguiu concluir | cadastro, contrato, cobrança e histórico do atendimento | tratar assuntos comerciais e dar continuidade aos casos escalados; o protótipo não integra uma fila real de atendimento |
 | Técnico de suporte avançado | receber só os casos difíceis, já com os testes prontos | rede, sinais e cabos de fibra | trocar modem, dar desconto, mandar equipe de rua (fora do escopo desta entrega) |
 | Gerente da operação | acompanhar quedas na cidade e não deixar clientes sem resposta | rede da cidade e metas de atendimento | marcar bairro em manutenção no sistema, pausando envio de técnico individual |
 
@@ -60,11 +63,15 @@ diagnóstico correto sobre custo de deslocamento.
 
 ### 2.2 Como é a interação
 
-- **Canal:** WhatsApp, porque é onde o cliente já reclama hoje; não exige
-  instalar nada nem aprender um app novo.
+- **Canal previsto:** WhatsApp, porque é onde o cliente já reclama hoje; não
+  exige instalar nada nem aprender um app novo. **Limite do protótipo:** esta
+  entrega recebe a mensagem pelo terminal; a integração com WhatsApp não está
+  implementada.
 - **Quem começa:** o cliente (reativo). A entrada automática por queda de
   bairro é tratada à parte, sem abrir uma conversa individual por cliente.
-- **Trocas até resolver:** 3 a 5 mensagens, na maioria dos casos.
+- **Trocas previstas no canal final:** 3 a 5 mensagens, na maioria dos casos.
+  No protótipo desta entrega, cada execução começa uma conversa nova; o
+  histórico de mensagens entre invocações ainda não é retomado pelo terminal.
 - **O que o sistema devolve:** texto explicando o diagnóstico e o que foi
   feito; em caso de falha física, uma proposta de data para visita técnica.
 - **Como termina:** com sucesso, confirma que o sinal voltou e pede para o
@@ -108,10 +115,11 @@ Dos 8 passos, 4 têm decisão do modelo (3, 4, 5 e 8) e o resto é código fixo.
 
 ## 4. O sistema
 
-**O que o sistema faz:** recebe a reclamação do cliente pelo WhatsApp, testa
-a linha automaticamente, tenta resolver à distância (reinício, troca de
-senha) e, se não conseguir, propõe e agenda uma visita técnica — sempre com
-confirmação do cliente para qualquer ação que gere custo.
+**O que o sistema faz nesta entrega:** recebe texto livre no terminal (o
+WhatsApp é o canal previsto para uma integração futura), testa a linha
+automaticamente, tenta resolver à distância por reinício remoto e, se não
+conseguir, propõe e agenda uma visita técnica — sempre com aprovação do
+cliente antes da escrita que gera custo.
 
 **Nível de autonomia: agente simples** (não workflow, não roteador puro). Um
 workflow de árvore fixa falha no caso "sintoma não bate com a causa": o
@@ -220,13 +228,13 @@ fictício.
 
 ## 10. Espaço para o que vem
 
-- [x] **RAG** (Parte 2): o manual de causas comuns de sinal fraco/perda de
-  fibra do provedor, hoje só existe como PDF interno não estruturado.
-- [ ] **MCP** (Parte 2): a camada de acesso ao "sistema do provedor"
-  (`testar_linha`, `conferir_queda_bairro`, `reiniciar_conexao`,
-  `agendar_visita_tecnico`) vira servidor MCP.
-- [ ] **LangChain** (Parte 2): ainda não decidido em que parte da
-  orquestração ela entraria.
+- [x] **RAG** (Parte 2): o projeto passou a consultar um corpus Markdown
+  simulado de sintomas, políticas e limiares, com um documento revogado
+  mantido para medir o efeito da curadoria.
+- [x] **LangGraph** (Parte 2): o laço de atendimento foi consolidado em
+  `StateGraph`, com estado tipado, checkpoint e pausa por `interrupt`.
+- [ ] **MCP** (etapa posterior/opcional): a camada de acesso ao sistema do
+  provedor poderá ser exposta como servidor MCP; não é requisito desta Parte 2.
 - [x] **Multiagente** (Parte 3): o agente de apoio ao técnico de campo,
   detalhado no PDF da parte 2 da entrega original (recebe fotos do conector
   óptico, mede sinal na caixa da rua, provisiona modem novo). Por que mais

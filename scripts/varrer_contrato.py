@@ -5,9 +5,10 @@ import sys
 from src import config
 
 
-def varrer(contrato: str):
+def varrer(contrato: str, raiz=None):
+    """Procura o identificador fora de docs/tests; raiz pode apontar para fixture temporária."""
     achados = []
-    for pasta, _, arquivos in os.walk(config.RAIZ):
+    for pasta, _, arquivos in os.walk(raiz or config.RAIZ):
         if any(p in pasta for p in (".git", "venv", ".venv", "__pycache__", "node_modules")):
             continue
         for nome in arquivos:
