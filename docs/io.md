@@ -171,8 +171,8 @@ A entrada é texto livre. O objeto de saída completo é validado por `RespostaA
 **O que ler:** Leia a entrada, a trajetória e o objeto de saída desta execução.
 
 - **Log:** `logs/caso_C004.json`
-- **Data:** `2026-11-11T23:53:27` · **commit:** `849dad9` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
-- **Entrada:** contrato `C004` · `thread_id` `C004:7c799655`
+- **Data:** `2026-11-12T23:04:10` · **commit:** `42f4158` · **modelo:** `qwen/qwen3.8-27b` · **temperature:** `0.2`
+- **Entrada:** contrato `C004` · `thread_id` `C004:0e49528c`
 - **Texto exato digitado:** "Sem internet, luz vermelha"
 - **Prompts:** `{
   "sistema": {
@@ -184,21 +184,79 @@ A entrada é texto livre. O objeto de saída completo é validado por `RespostaA
     "sha256": "5ecc9d266e5f"
   }
 }`
-- **Ferramentas chamadas:** nenhuma
-- **Consultas ao corpus:** 0 (sem trecho útil: 0) · **voltas:** None · **tokens:** 0
-- **Pausas de aprovação:** `[]`
-- **Motivo de término:** `identidade_nao_verificada`
+- **Ferramentas chamadas:** testar_linha, conferir_queda_bairro, consultar_base_conhecimento, obter_data_atual, propor_visita
+- **Consultas ao corpus:** 1 (sem trecho útil: 0) · **voltas:** 4 · **tokens:** 8421
+- **Pausas de aprovação:** `[
+  {
+    "payload": {
+      "acao": "agendar_visita_tecnico",
+      "contrato": "C004",
+      "data_proposta": "2026-11-13",
+      "consequencia": "desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho",
+      "opcoes": [
+        "aprovar",
+        "rejeitar",
+        "editar"
+      ],
+      "janela_edicao": [
+        "2026-11-12",
+        "2026-11-26"
+      ],
+      "prazo_segundos": 900
+    },
+    "resposta": {
+      "decisao": "aprovar"
+    }
+  }
+]`
+- **Motivo de término:** `resposta_final`
 
 **Objeto de saída completo:**
 
 ```json
 {
-  "resultado": "Não consegui confirmar este atendimento com o contrato informado, então não vou consultar nem alterar nada. Vou encaminhar você para um atendente humano.",
-  "fontes": [],
-  "suficiente": false,
-  "motivo_insuficiencia": "identidade_nao_verificada",
-  "encaminhar_humano": true,
-  "motivo_parada": "identidade_nao_verificada",
+  "resultado": "Pronto! A visita técnica foi **agendada para amanhã, 13/11/2026** [S07].\n\nEnquanto isso, se puder, confira se o cabo de fibra (o cabinho amarelo atrás do modem) está bem encaixado e sem dobra [S01]. Mas a visita já está confirmada, então a equipe vai resolver o problema na sua casa.",
+  "fontes": [
+    {
+      "tipo": "ferramenta",
+      "id": "conferir_queda_bairro",
+      "detalhe": null
+    },
+    {
+      "tipo": "ferramenta",
+      "id": "obter_data_atual",
+      "detalhe": null
+    },
+    {
+      "tipo": "ferramenta",
+      "id": "propor_visita",
+      "detalhe": null
+    },
+    {
+      "tipo": "ferramenta",
+      "id": "testar_linha",
+      "detalhe": null
+    },
+    {
+      "tipo": "ferramenta",
+      "id": "agendar_visita_tecnico",
+      "detalhe": null
+    },
+    {
+      "tipo": "corpus",
+      "id": "S07",
+      "detalhe": "01_manual_sintomas"
+    },
+    {
+      "tipo": "corpus",
+      "id": "S01",
+      "detalhe": "01_manual_sintomas"
+    }
+  ],
+  "suficiente": true,
+  "motivo_insuficiencia": null,
+  "encaminhar_humano": false,
+  "motivo_parada": "resposta_final",
   "citacoes_invalidas": []
 }
 ```

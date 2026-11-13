@@ -9,20 +9,22 @@ esperando resposta no WhatsApp; custo importa porque o volume é alto
 importam pouco aqui — a conversa é curta e não há imagem nesta entrega
 (fica para o agente do técnico, Parte 3).
 
-| Eixo                                   | Mistral Small (`mistral-small-latest`) | GPT-4o mini | Llama 3.1 8B Instant (Groq) |
-|----------------------------------------|----------------------------------------|-------------|-----------------------------|
-| Janela de contexto                     | 32K                                           | 128K | 128K |
-| Tool calling / saída estruturada       | sim                                           | sim | sim |
-| Multimídia                             | não (texto)                                   | sim (imagem) | não |
-| Raciocínio                             | suficiente para classificação + decisão curta | mais forte, útil se o prompt crescer | mais fraco em instrução composta |
-| Custo (entrada / saída, por 1M tokens) | US$ 0,20 / US$ 0,60                           | US$ 0,15 / US$ 0,60 | US$ 0,05 / US$ 0,08 |
-| Latência                               | baixa                                                  | baixa | muito baixa (hardware LPU da Groq) |
-| Onde roda                              | API pública Mistral                                       | API pública OpenAI | API pública Groq |
-| Política de dados                      | dado do cliente trafega para a Mistral; não há residência de dados no Brasil | trafega para a OpenAI, mesma ressalva | trafega para a Groq, mesma ressalva |
+| Eixo                                   | Mistral Small (`mistral-small-latest`) | GPT-4o mini | Llama 3.1 8B Instant (Groq) | Qwen3 27B (`qwen/qwen3.8-27b`, Groq) |
+|----------------------------------------|----------------------------------------|-------------|-----------------------------|--------------------------------------|
+| Janela de contexto                     | 32K                                    | 128K        | 128K                        | 32K                                  |
+| Tool calling / saída estruturada       | sim                                    | sim         | sim                         | sim                                  |
+| Multimídia                             | não (texto)                            | sim (imagem) | não                        | não                                  |
+| Raciocínio                             | suficiente para classificação + decisão curta | mais forte, útil se o prompt crescer | mais fraco em instrução composta | suficiente para classificação e escolha de ferramenta |
+| Custo (entrada / saída, por 1M tokens) | US$ 0,20 / US$ 0,60                    | US$ 0,15 / US$ 0,60 | US$ 0,05 / US$ 0,08       | free tier (sem preço por token)      |
+| Latência                               | baixa                                  | baixa       | muito baixa (hardware LPU da Groq) | baixa                              |
+| Onde roda                              | API pública Mistral                    | API pública OpenAI | API pública Groq          | API pública Groq                     |
+| Política de dados                      | dado do cliente trafega para a Mistral; não há residência de dados no Brasil | trafega para a OpenAI, mesma ressalva | trafega para a Groq, mesma ressalva | tráfego para a Groq; mesmas ressalvas de residência de dados |
 
 Preços consultados em setembro de 2026 nas páginas oficiais de cada
 provedor (ver `docs/fontes.md`) — conferir antes de rodar em produção, pois
-mudam com frequência.
+mudam com frequência. A coluna do Qwen3 27B foi acrescentada depois da
+decisão (§4) e reflete a configuração de outubro de 2026: o modelo roda no
+free tier da Groq e não tem preço por token publicado para essa conta.
 
 ## 2. A conta
 
@@ -44,6 +46,17 @@ Pelo volume do case (5.400 chamados/mês, §2.5): Mistral Small ≈ US$ 5,40/mê
 GPT-4o mini ≈ US$ 4,90/mês; Llama 3.1 8B ≈ US$ 1,10/mês. Nos três casos o
 custo de rodar é irrelevante perto do ganho operacional estimado — a decisão
 não deve ser guiada só por preço.
+
+**O modelo realmente escolhido (`qwen/qwen3.8-27b` via Groq) roda no free tier**
+do provedor: não há cobrança por token, mas há limites de requisições e de
+tokens por minuto, e esses limites variam por conta e por região (ver §5).
+Para o volume de teste do grupo (poucas centenas de execuções no semestre),
+o custo em dinheiro é **R$ 0,00**. A ressalva honesta é que o free tier pode
+mudar ou ser descontinuado: se isso acontecer, a referência de preço é o
+GPT-4o mini (~US$ 0,0009 por execução, ~US$ 4,90/mês a 5.400 chamados) ou o
+Mistral Small (~US$ 0,001 por execução, ~US$ 5,40/mês). O custo do semestre,
+no cenário de produção, seria de **US$ 30 a US$ 40** para 6 meses a 5.400
+chamados/mês — ordens de grandeza abaixo do ganho operacional estimado.
 
 ## 3. A verificação mínima
 

@@ -40,9 +40,9 @@ O objeto `RespostaAtendimento` não é escrito pelo modelo: o código o monta a 
 
 | Arquivo | Papel | Versão em uso nos logs de 19/10/2026 (sha256, 12 primeiros) |
 |---|---|---|
-| `src/prompts/suporte_v2.md` | prompt do agente | `8ff597289d95` |
+| `src/prompts/suporte_v2.md` | prompt do agente | `846930f9bbfe` |
 | `src/prompts/procedural.md` | memória procedural, entra no prompt de toda execução | `5ecc9d266e5f` |
-| `prompts/suporte_v1.md` | prompt da Parte 1, mantido como histórico | não usado |
+| `src/prompts/suporte_v1.md` | prompt da Parte 1, mantido como histórico | não usado |
 
 Cada log registra, no campo `prompts`, o arquivo e o hash do conteúdo em uso. Mudar `procedural.md` muda o comportamento do agente, então a mudança passa por revisão como qualquer código.
 

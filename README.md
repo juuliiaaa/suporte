@@ -1,5 +1,7 @@
 # Agente de Suporte Técnico Doméstico
 
+**Integrantes:** Maria Eduarda Mariano Coelho; Júlia Almeida Leite; Bianca Lima Rodrigues; Bruno José Oliveira Gomes
+
 ## O problema em uma frase
 Descobrir e resolver o motivo de a internet da casa do cliente estar ruim ou
 fora do ar na hora, rodando testes automáticos na linha, sem precisar passar
@@ -76,13 +78,13 @@ agenda, depois da aprovação do cliente.
 **O que acontece quando o grafo para.** Ao propor a visita, o grafo pausa no
 nó `aprovacao` e o terminal mostra a ação exata e as opções. O estado fica
 gravado no checkpoint e a execução só continua com a resposta de quem decide.
-Exemplo real (`logs/caso_C004_pausa_edita.json`): o grafo propôs 2026-10-20, a
-resposta foi `editar` com 2026-10-22, o código validou a data e agendou nela.
+Exemplo real (`logs/caso_C004_pausa_edita.json`): o grafo propôs 2026-11-13, a
+resposta foi `editar` com 2026-11-15, o código validou a data e agendou nela.
 Detalhes, as quatro saídas e o prazo em [docs/humano.md](docs/humano.md).
 
 ```
 === APROVAÇÃO NECESSÁRIA ===
-Ação: agendar_visita_tecnico  contrato=C004  data=2026-10-20
+Ação: agendar_visita_tecnico  contrato=C004  data=2026-11-13
 Consequência: desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho
 Prazo: 900s. Opções: aprovar | rejeitar | editar AAAA-MM-DD
 ```
@@ -94,6 +96,7 @@ chamada, argumentos e resultado), as pausas de aprovação, o commit, os
 prompts em uso e a resposta final.
 
 **Exemplo real** (entrada e saída completas, copiadas do log):
+
 <!-- EXEMPLO:INICIO -->
 Entrada digitada: "A luz do modem está piscando vermelha e a internet caiu."
 
@@ -103,21 +106,9 @@ Saída completa validada:
 {
   "resultado": "Reiniciamos a conexão e o teste voltou a mostrar a linha **ONLINE** com sinal bom (-22 dBm).\n\nPode confirmar se a luz do modem voltou ao normal e se a internet voltou a funcionar?",
   "fontes": [
-    {
-      "tipo": "ferramenta",
-      "id": "conferir_queda_bairro",
-      "detalhe": null
-    },
-    {
-      "tipo": "ferramenta",
-      "id": "reiniciar_conexao",
-      "detalhe": null
-    },
-    {
-      "tipo": "ferramenta",
-      "id": "testar_linha",
-      "detalhe": null
-    }
+    { "tipo": "ferramenta", "id": "conferir_queda_bairro", "detalhe": null },
+    { "tipo": "ferramenta", "id": "reiniciar_conexao", "detalhe": null },
+    { "tipo": "ferramenta", "id": "testar_linha", "detalhe": null }
   ],
   "suficiente": true,
   "motivo_insuficiencia": null,
@@ -132,10 +123,11 @@ Execução registrada em `2026-11-12T20:43:18`, commit `870ee9c`.
 
 **O que o sistema não faz:** não responde sobre cobrança, fatura ou
 cancelamento (informa o encaminhamento para humano, sem abrir chamado real);
-não inventa resposta fora do manual (recusa e oferece encaminhamento); não agenda visita sem a aprovação do cliente; não
-agenda visita individual se o bairro estiver em manutenção. Se passar de 6
-voltas, 8 chamadas de ferramenta, 12000 tokens ou 120 s sem resolver, encerra e
-encaminha para um atendente humano.
+não inventa resposta fora do manual (recusa e oferece encaminhamento); não
+agenda visita sem a aprovação do cliente; não agenda visita individual se o
+bairro estiver em manutenção. Se passar de 6 voltas, 8 chamadas de ferramenta,
+12000 tokens ou 120 s sem resolver, encerra e encaminha para um atendente
+humano.
 
 ## Como rodar os casos da Parte 2
 
@@ -144,9 +136,9 @@ C005, FORA, C004, C004B, INC, AMB e ESC (10 casos); sem argumentos rodam todos.
 
 ```powershell
 python -m scripts.rodar_casos                 # 10 casos com o modelo real, bancos temporários
-python -m scripts.rodar_casos C004 C004B       # prova de aprovação repetida, sem apagar bancos locais
-python -m scripts.gerar_io              # monta docs/io.md e atualiza o exemplo deste README
-python -m scripts.experimento_frase 5   # remove uma frase do prompt, 5 execuções por variante
+python -m scripts.rodar_casos C004 C004B      # prova de aprovação repetida, sem apagar bancos locais
+python -m scripts.gerar_io                    # monta docs/io.md e atualiza o exemplo deste README
+python -m scripts.experimento_frase 5         # remove uma frase do prompt, 5 execuções por variante
 ```
 
 Sem modelo:

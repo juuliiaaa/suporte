@@ -105,7 +105,7 @@ Atualizado na Parte 2 para o que o sistema faz hoje (o desenho está em `docs/ar
 | 1. ENTRADA | o cliente escreve no WhatsApp; o contrato vem da sessão | CÓDIGO |
 | 2. SEPARAÇÃO | cobrança, cancelamento ou pedido de atendente vão para humano; mensagem sem sintoma recebe um pedido de detalhes | CÓDIGO (regras de palavra, sem chamar o modelo) |
 | 3. DIAGNÓSTICO | `testar_linha`, `conferir_queda_bairro`, `consultar_base_conhecimento` | MODELO escolhe qual; CÓDIGO aplica o limite de 3 testes e detecta laço |
-| 4. AÇÃO | `reiniciar_conexao`, se não houver falha física | MODELO escolhe; CÓDIGO recusa se o sinal é igual ou pior que -27 dBm |
+| 4. AÇÃO | `reiniciar_conexao` (**ESCRITA reversível**), se não houver falha física | MODELO escolhe; CÓDIGO recusa se o sinal é igual ou pior que -27 dBm |
 | 5. VERIFICAÇÃO | roda `testar_linha` de novo antes de dizer "resolvido" | MODELO, por instrução do prompt; não há trava em código (medido em `docs/experimento_frase.md`) |
 | 6. AGENDAMENTO | `propor_visita` valida; o grafo pausa; o cliente aprova, rejeita ou edita a data; só então o código agenda | CÓDIGO e CLIENTE; o modelo não tem a ferramenta que agenda |
 | 7. REGISTRO | grava a trajetória no log e a memória do atendimento | CÓDIGO |
@@ -193,11 +193,26 @@ partir de uma linha de base medida, não um resultado já observado.
 
 ## 6. O verificador
 
-Conjunto de **casos rotulados à mão**: para cada caso de teste (os 4 de
-§2.8 mais outros que o grupo adicionar), definimos manualmente qual é a
-ação correta esperada do agente (reiniciar / agendar visita / escalar para
-humano / não agir). O verificador compara a ação realmente tomada pelo
-agente (lida do log de trajetória) com a ação esperada da tabela.
+Conjunto de **casos rotulados à mão** em `dados/casos_rotulados.json`: para cada caso, a ação correta esperada do agente (`reiniciar` / `nao_agir` / `agendar` / `escalar`). O verificador compara a ação realmente tomada (lida do log de trajetória) com a esperada.
+
+Os 10 casos:
+
+| # | Rótulo | Contrato | Ação esperada | O que a saída correta mostra |
+|---|---|---|---|---|
+| 1 | `caso_C001_feliz` | C001 | `reiniciar` | linha OFFLINE com sinal bom, bairro sem manutenção; o agente reinicia e confirma com novo teste |
+| 2 | `caso_C002_divergencia` | C002 | `nao_agir` | teste mostra ONLINE com sinal bom e bairro sem manutenção; o relato contradiz o sistema, então o agente orienta teste local e pede detalhes |
+| 3 | `caso_C999_inexistente` | C999 | `nao_agir` | contrato não existe: o erro da ferramenta vira dado e a resposta sai com `suficiente=false` |
+| 4 | `caso_C005_nao_agenda` | C005 | `nao_agir` | bairro em manutenção: nenhuma visita individual, mesmo com o cliente pedindo |
+| 5 | `caso_fora_do_corpus` | C001 | `escalar` | pergunta fora do corpus: recusa com `suficiente=false` e oferece encaminhamento humano |
+| 6 | `caso_C004_pausa_edita` | C004 | `agendar` | falha física (−30 dBm): o grafo pausa, o cliente edita a data e o código agenda |
+| 7 | `caso_C004_aprovacao_repetida` | C004 | `agendar` | a mesma aprovação repetida não cria outra visita (`ja_existia=true`) |
+| 8 | `caso_entrada_incompleta` | C001 | `nao_agir` | "não funciona": pede detalhes sem chamar ferramenta (`suficiente=false`) |
+| 9 | `caso_entrada_ambigua` | C001 | `reiniciar` | relato ambíguo entre Wi-Fi e fibra, mas C001 está OFFLINE com sinal bom: reiniciar é a ação prevista. Rótulo corrigido em 12/11/2026 (a versão original `nao_agir` supunha linha normal) |
+| 10 | `caso_fora_do_escopo` | C001 | `escalar` | cobrança/cancelamento: a triagem em código encaminha para humano antes do modelo |
+
+O caso 9 é o único cujo rótulo mudou desde a primeira versão do `casos_rotulados.json` — a nota está no próprio arquivo. O verificador lê o log gravado; não garante a próxima rodada, e é por isso que o caso 9 continua sendo o mais frágil do conjunto.
+
+Resultado da última rodada completa (`python -m scripts.rodar_casos`): os 10 casos com a ação esperada, com a ressalva do caso 9 acima.
 
 ## 7. O critério de sucesso
 

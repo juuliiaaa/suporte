@@ -83,15 +83,14 @@ O sistema não descobre sozinho que um documento envelheceu: nada no texto de V0
 
 **Forma escolhida: ferramenta do agente.** O modelo decide quando consultar (`consultar_base_conhecimento`), como decide chamar qualquer outra ferramenta. A alternativa, uma etapa fixa antes de toda resposta, faria uma busca em toda execução.
 
-**Chamadas de recuperação por execução**, lidas dos 11 logs em `logs/` (10 execuções de 19/10/2026 e um registro histórico de 18/10/2026), reproduzidos em `docs/io.md`:
+**Chamadas de recuperação por execução**, lidas dos 13 logs em `logs/` reproduzidos em `docs/io.md`:
 
 | Caso | Consultas ao corpus | Sem trecho útil |
 |---|---|---|
-| `caso_C002_divergencia` | 1 | 0 |
 | `caso_fora_do_corpus` | 1 | 1 |
-| os outros 9 casos | 0 | 0 |
-| **total em 11 execuções** | **2 (média de 0,18 por execução)** | **1** |
+| os outros 12 casos | 0 | 0 |
+| **total em 13 execuções** | **1 (média de 0,08 por execução)** | **1** |
 
-Com uma etapa fixa seriam 11 buscas em 11 execuções, das quais 9 em atendimentos que não precisaram do manual. A ferramenta economizou essas 9 buscas, ao custo de uma volta a mais nas vezes em que o modelo consultou. O número varia entre execuções do mesmo caso: numa rodada anterior, `caso_C001_feliz` também consultou o manual (S01) e nesta não.
+Com uma etapa fixa seriam 13 buscas em 13 execuções, das quais 12 em atendimentos que não precisaram do manual. A ferramenta economizou essas 12 buscas, ao custo de uma volta a mais nas vezes em que o modelo consultou. O número varia entre execuções do mesmo caso: numa rodada anterior, `caso_C001_feliz` também consultou o manual (S01) e nesta não.
 
 A ferramenta devolve no máximo 3 trechos com id, e a saída final só aceita citações de ids que ela devolveu naquela execução (`docs/arquitetura.md` §9). Uma consulta com `suficiente=false` é registrada na trajetória e conta como consulta sem trecho útil.

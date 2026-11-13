@@ -20,12 +20,11 @@ A pausa é estrutural: o modelo não tem a ferramenta que agenda. Ele tem `propo
 
 O `interrupt` entrega a ação exata, e não um resumo do modelo: a ação (`agendar_visita_tecnico`), o contrato, a data proposta, a consequência ("desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho"), as opções (aprovar, rejeitar, editar), a janela de edição (de hoje até 14 dias) e o prazo. No terminal:
 
-```
 === APROVAÇÃO NECESSÁRIA ===
-Ação: agendar_visita_tecnico  contrato=C004  data=2026-10-20
+Ação: agendar_visita_tecnico contrato=C004 data=2026-11-13
 Consequência: desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho
 Prazo: 900s. Opções: aprovar | rejeitar | editar AAAA-MM-DD
-```
+
 
 ## 3. As quatro saídas
 
@@ -38,7 +37,7 @@ Prazo: 900s. Opções: aprovar | rejeitar | editar AAAA-MM-DD
 
 Qualquer resposta fora dessas quatro vira rejeitar. A edição existe porque a política P04 permite ao cliente escolher uma data posterior à proposta, e é o que separa aprovação de carimbo: o agente propõe até amanhã e o cliente pode corrigir a data antes de deixar seguir.
 
-Exemplo real, `caso_C004_pausa_edita` (log de 19/10/2026): o grafo propôs 2026-10-20, a resposta foi `editar` com 2026-10-22, o código validou a data e agendou nela. O modelo disse ao cliente "A visita técnica foi agendada para 22/10/2026" só depois do resultado do nó `agendar`.
+Exemplo real, `caso_C004_pausa_edita` (log de 12/11/2026, em `docs/io.md`): o grafo propôs `2026-11-13`, a resposta foi `editar` com `2026-11-15`, o código validou a data e agendou nela. O modelo disse ao cliente "A visita técnica foi **agendada para 15/11/2026**" só depois do resultado do nó `agendar`.
 
 ## 4. A implementação, e por que ela depende do checkpoint
 
@@ -62,18 +61,17 @@ O agendamento é idempotente: a chave deriva de contrato e data (`sha256(contrat
 
 | Execução | `thread_id` | Resultado do nó `agendar` |
 |---|---|---|
-| primeira | `C004:3c17344b` | `{"contrato": "C004", "data": "2026-10-22", "status": "AGENDADA", "ja_existia": false}` |
-| segunda | `C004:23eb916f` | `{"contrato": "C004", "data": "2026-10-22", "status": "AGENDADA", "ja_existia": true}` |
+| primeira (`2026-11-12T21:19:47`) | `C004:8e154001` | `{"contrato": "C004", "data": "2026-11-15", "status": "AGENDADA", "ja_existia": false}` |
+| segunda (`2026-11-12T21:20:51`) | `C004:d658c5c8` | `{"contrato": "C004", "data": "2026-11-15", "status": "AGENDADA", "ja_existia": true}` |
 
 A segunda chamada reconheceu a visita pela chave e não criou nada. Para repetir o cenário com o modelo real sem alterar os bancos do projeto, execute `python -m scripts.rodar_casos C004 C004B`: o script usa bancos temporários compartilhados entre os dois casos e preserva os logs históricos com nomes novos.
 
 Também sem modelo, `python -m scripts.demo_idempotencia` mostra o mesmo no nível da ferramenta:
 
-```
 aprovação 1: {'contrato': 'C004', 'data': '2026-10-20', 'status': 'AGENDADA', 'ja_existia': False}
 aprovação 2: {'contrato': 'C004', 'data': '2026-10-20', 'status': 'AGENDADA', 'ja_existia': True}
 linhas em visitas: 1
-```
+
 
 `tests/test_grafo.py` repete o caso passando pelo grafo inteiro.
 
