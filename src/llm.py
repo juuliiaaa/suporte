@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional
@@ -51,6 +52,21 @@ def _args_ou_vazio(texto_json: Optional[str]) -> dict:
     return valor if isinstance(valor, dict) else {}
 
 
+def _limite_diario(erro) -> bool:
+    """429 por limite DIÁRIO não volta em segundos: tentar de novo só gasta tempo."""
+    t = str(erro).lower()
+    return "per day" in t or "(tpd)" in t or "(rpd)" in t
+
+
+def _segundos_de_espera(erro, tentativa: int) -> float:
+    """Usa o 'try again in 1.3s' que o provedor informa no limite por minuto
+    (somado a 1 s de folga); sem a dica, recua exponencialmente. Teto de 60 s."""
+    m = re.search(r"try again in (?:(\d+)m)?(?:([\d.]+)s)?", str(erro))
+    if m and (m.group(1) or m.group(2)):
+        return min(60.0, int(m.group(1) or 0) * 60 + float(m.group(2) or 0) + 1.0)
+    return float(min(60, 2 ** tentativa))
+
+
 class ClienteLLM:
     def __init__(self, client=None, modelo: str = config.MODELO, esperar: Callable[[float], None] = time.sleep):
         self._client = client
@@ -85,11 +101,13 @@ class ClienteLLM:
                 )
                 break
             except recuperaveis as erro:
+                if isinstance(erro, openai.RateLimitError) and _limite_diario(erro):
+                    raise ErroLLMFatal(f"limite_diario_do_provedor: {str(erro)[:300]}") from erro
                 if tentativa == config.TENTATIVAS_LLM:
                     raise ErroLLMFatal(
                         f"esgotou {tentativa} tentativas: {type(erro).__name__}: {erro}"
                     ) from erro
-                self._esperar(2 ** tentativa)
+                self._esperar(_segundos_de_espera(erro, tentativa))
             except Exception as erro:  # autenticação, requisição inválida etc.
                 raise ErroLLMFatal(f"{type(erro).__name__}: {erro}") from erro
         msg = r.choices[0].message

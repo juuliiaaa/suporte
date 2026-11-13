@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-19T01:39:17",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T21:40:24",
+  "commit": "2b342bc",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C002:7c4c69e3",
+  "thread_id": "C002:d0018a4a",
   "contrato": "C002",
   "mensagem_inicial": "Minha internet caiu, nada navega aqui em casa.",
   "trajetoria": [
@@ -45,56 +45,36 @@
         "contrato": "C002"
       },
       "resultado": {
-        "bairro": "Jardim Ipê",
-        "em_manutencao": true
-      }
-    },
-    {
-      "tipo": "ferramenta",
-      "nome": "consultar_base_conhecimento",
-      "args": {
-        "pergunta": "Bairro em manutenção geral, cliente sem navegação, linha online. O que fazer?"
-      },
-      "resultado": {
-        "suficiente": true,
-        "trechos": [
-          {
-            "id": "S10",
-            "doc": "01_manual_sintomas",
-            "titulo": "O cliente diz que caiu, mas o teste mostra ONLINE",
-            "texto": "Manual de sintomas e diagnóstico. S10 — O cliente diz que caiu, mas o teste mostra ONLINE. Categoria: divergência.\nQuando o relato do cliente contradiz o teste, não feche o caso como resolvido. Peça ao cliente para testar em outro aparelho, reiniciar o roteador dele e conferir os cabos. Verifique também se o bairro está em manutenção.",
-            "score": 6.143,
-            "cobertura": 0.571
-          }
-        ]
+        "bairro": "Vila Nova",
+        "em_manutencao": false
       }
     },
     {
       "tipo": "resposta_final",
-      "conteudo": "A linha do seu contrato está online e o sinal está bom (-18 dBm). O problema é que o seu bairro, Jardim Ipê, está em manutenção geral de rede — a equipe já está atuando no local.\n\nPor isso não vou agendar visita individual. Enquanto a manutenção não termina, pode ser que a navegação fique instável.\n\nEnquanto isso, teste em outro aparelho e reinicie o roteador. Se o problema persistir mesmo assim, me avise."
+      "conteudo": "A linha está online e o sinal está bom (-18 dBm), e não há manutenção no seu bairro (Vila Nova).\n\nComo o teste mostra a linha funcionando, o problema pode estar no Wi-Fi ou no aparelho. Pode testar com outro aparelho (celular, notebook) e me dizer o que a luz do roteador está mostrando?"
     },
     {
       "tipo": "memoria_gravada",
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "c0fedc253b96eba7",
+          "chave_idem": "bba0327f5cee8c6f",
           "ja_existia": false
         },
         "fato": {
-          "chave_idem": "32209350a5a2a0b2",
+          "chave_idem": "6affd68fc46d3ade",
           "ja_existia": false
         }
       }
     }
   ],
   "pausas_de_aprovacao": [],
-  "voltas": 3,
-  "tokens": 4513,
-  "segundos_ativos": 26.51,
+  "voltas": 2,
+  "tokens": 3051,
+  "segundos_ativos": 3.11,
   "motivo_parada": "resposta_final",
   "saida": {
-    "resultado": "A linha do seu contrato está online e o sinal está bom (-18 dBm). O problema é que o seu bairro, Jardim Ipê, está em manutenção geral de rede — a equipe já está atuando no local.\n\nPor isso não vou agendar visita individual. Enquanto a manutenção não termina, pode ser que a navegação fique instável.\n\nEnquanto isso, teste em outro aparelho e reinicie o roteador. Se o problema persistir mesmo assim, me avise.",
+    "resultado": "A linha está online e o sinal está bom (-18 dBm), e não há manutenção no seu bairro (Vila Nova).\n\nComo o teste mostra a linha funcionando, o problema pode estar no Wi-Fi ou no aparelho. Pode testar com outro aparelho (celular, notebook) e me dizer o que a luz do roteador está mostrando?",
     "fontes": [
       {
         "tipo": "ferramenta",

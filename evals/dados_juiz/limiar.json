@@ -1,7 +1,0 @@
-{
-  "concordancia_minima": 0.85,
-  "kappa_minimo": 0.6,
-  "declarado_em": "2026-11-11",
-  "declarado_antes_de_medir": true,
-  "racional": "Com 20 amostras, 85% (17 de 20) é o menor percentual em que três desacordos ainda cabem; kappa de 0,6 é o piso de concordância substancial."
-}

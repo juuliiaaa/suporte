@@ -8,7 +8,7 @@ O modelo é chamado em um lugar só: o nó `agente`, uma vez por volta. As outra
 
 | Etapa | Modelo? | Técnica | Por que ela | Contrato de saída | Como é testada |
 |---|---|---|---|---|---|
-| agente (cada volta) | sim | zero-shot com regras explícitas e chamada de função; memória procedural (4 regras) e bloco de memória no contexto | o formato é imposto pelo esquema das ferramentas, as regras do domínio cabem em frases curtas, e exemplos de diálogo custariam tokens em toda volta. Não foi comparada uma variante few-shot; zero-shot bastou nas execuções reais | ver §1.1 | 57 testes com modelo simulado já validados na versão anterior; esta correção acrescenta 6 verificações de schema em `tests/test_schemas.py`, que devem ser incluídas na próxima execução da suíte e 10 cenários do roteiro principal (mais um registro histórico adicional) em `docs/io.md` (obediência do modelo) |
+| agente (cada volta) | sim | zero-shot com regras explícitas e chamada de função; memória procedural (4 regras) e bloco de memória no contexto | o formato é imposto pelo esquema das ferramentas, as regras do domínio cabem em frases curtas, e exemplos de diálogo custariam tokens em toda volta. Não foi comparada uma variante few-shot; zero-shot bastou nas execuções reais | ver §1.1 | 88 testes com modelo simulado passam por inteiro (`python -m pytest tests -q`); 10 cenários do roteiro principal (mais um registro histórico adicional) em `docs/io.md` (obediência do modelo) |
 | triagem | não | regex sobre texto sem acento | as rotas são poucas e se reconhecem por palavra; custo zero e determinística | rota `humano`, `incompleta` ou `suporte` | `tests/test_grafo.py`: cobrança vai para humano sem chamar o modelo; três mensagens sem sintoma pedem detalhes sem chamar o modelo |
 | extração de fato para a memória | não | regra sobre o que as ferramentas devolveram (`memoria.extrair_episodio`) | deixar o modelo decidir o que lembrar guarda demais e guarda errado (`docs/memoria.md` §3) | um episódio e, se houve teste de linha, o último sinal | `tests/test_memoria.py`: só entra o que a ferramenta devolveu |
 | resposta com manual | não é etapa à parte | o modelo consulta o corpus como ferramenta e responde na volta seguinte | a recuperação é decisão do modelo (`docs/rag.md` §6) | a mesma do agente, com citação de id | validação em código no nó `finalizar` |
@@ -78,6 +78,8 @@ A v2 tinha a instrução de perguntar o que falta, sem usar ferramentas, quando 
 ### 3.3 Entrada ambígua: o que se viu
 
 Com "A internet está ruim hoje, não sei se é o wifi ou a internet mesmo", a regra "escolha a leitura mais provável e diga qual" foi seguida na execução de 19/10 ("o problema provavelmente é no wifi, não na internet"). Em outra execução do mesmo caso, o modelo escreveu "faz os dois testes que te pedi", sem ter pedido nada antes. Foi uma ocorrência, e não houve proteção em código para isso.
+
+Numa terceira rodada (12/11) o modelo testou a linha, viu OFFLINE com sinal de -22 dBm, confirmou que o bairro estava sem manutenção, reiniciou a conexão e testou de novo. O rótulo original do caso previa só leitura (`nao_agir`), mas supunha uma linha normal; C001 está OFFLINE, e para esse estado reiniciar é a ação certa. O rótulo foi corrigido para `reiniciar` (`dados/casos_rotulados.json`). A correção vale para o estado da linha, não para a ambiguidade da frase: o comportamento do modelo neste caso continua variando entre execuções, e a verificação lê o log gravado, não garante a próxima rodada.
 
 ## 4. A triagem
 

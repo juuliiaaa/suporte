@@ -148,7 +148,7 @@ Toda execução acaba com um `motivo_parada`, definido em `src/guardas.py`:
 | erro_fatal_llm | erro do modelo que repetir não resolve | sim |
 | recursion_limit | o grafo passou de 25 passos | sim |
 
-Erros recuperáveis do modelo (limite de taxa, rede, timeout) têm até 3 tentativas, com espera de 2 s e 4 s entre elas; o SDK não faz retries adicionais e cada requisição tem timeout de 30 s. Qualquer outro erro é fatal. Quando a resposta é `resposta_final` mas falta fonte verificável, o campo `suficiente` do contrato de saída fica falso (`sem_fonte`, `citacao_nao_verificada` ou `fora_do_corpus`), e o motivo de parada continua `resposta_final`.
+Erros recuperáveis do modelo (limite de taxa, rede, timeout) têm até 5 tentativas; no limite de taxa a espera segue o tempo informado pelo provedor (mais 1 s de folga, teto de 60 s), e limite diário de tokens falha na hora; o SDK não faz retries adicionais e cada requisição tem timeout de 30 s. Qualquer outro erro é fatal. Quando a resposta é `resposta_final` mas falta fonte verificável, o campo `suficiente` do contrato de saída fica falso (`sem_fonte`, `citacao_nao_verificada` ou `fora_do_corpus`), e o motivo de parada continua `resposta_final`.
 
 ### 4.5.1 O humano
 
@@ -166,7 +166,7 @@ A decisão que só o modelo toma em tempo de execução é **qual diagnóstico r
 |---|---|
 | caso_C001_feliz ("luz piscando vermelha e a internet caiu") | testar_linha, conferir_queda_bairro, reiniciar_conexao, testar_linha |
 | caso_C005_nao_agenda ("quero que mandem um técnico hoje") | testar_linha, conferir_queda_bairro, e parou: bairro em manutenção |
-| caso_entrada_ambigua ("não sei se é o wifi ou a internet") | só testar_linha, e propôs um teste com cabo |
+| caso_entrada_ambigua ("não sei se é o wifi ou a internet") | testar_linha, conferir_queda_bairro, reiniciar_conexao, testar_linha (a linha de C001 estava OFFLINE com sinal bom) |
 | caso_C004_pausa_edita ("a luz está vermelha") | testar_linha, obter_data_atual, propor_visita |
 | caso_fora_do_corpus (abrir portas no roteador) | só consultar_base_conhecimento |
 

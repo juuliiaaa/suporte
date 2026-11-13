@@ -54,7 +54,7 @@ Com o reducer, as duas escritas se somam. Sem ele, o langgraph 1.2.16 recusa a s
 
 ## 6. Erros: recuperáveis e fatais
 
-Limite de taxa, falha de conexão e timeout do modelo são recuperáveis: até 3 tentativas com espera de 2 e 4 segundos; cada requisição é limitada a 30 segundos e o SDK não acrescenta retries próprios. Qualquer outro erro (chave inválida, requisição inválida) é fatal e vira `erro_fatal_llm`. Erro de ferramenta é dado: volta ao modelo como resultado com o campo `erro`. Ferramenta inexistente, argumento inválido e contrato sobrescrito pelo modelo também viram dado; o contrato vem da sessão e substitui o que o modelo digitar, registrado como `contrato_sobrescrito`.
+Limite de taxa, falha de conexão e timeout do modelo são recuperáveis: até 5 tentativas; no limite de taxa a espera segue o "try again in" informado pelo provedor, mais 1 segundo de folga (teto de 60 s), e sem essa dica recua em potências de 2. Limite DIÁRIO de tokens não é recuperável: falha na hora como `erro_fatal_llm` (`limite_diario_do_provedor`); cada requisição é limitada a 30 segundos e o SDK não acrescenta retries próprios. Qualquer outro erro (chave inválida, requisição inválida) é fatal e vira `erro_fatal_llm`. Erro de ferramenta é dado: volta ao modelo como resultado com o campo `erro`. Ferramenta inexistente, argumento inválido e contrato sobrescrito pelo modelo também viram dado; o contrato vem da sessão e substitui o que o modelo digitar, registrado como `contrato_sobrescrito`.
 
 ## 7. Checkpoints
 

@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-19T01:39:39",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T20:43:28",
+  "commit": "870ee9c",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C999:61c1f55c",
+  "thread_id": "C999:d9e49300",
   "contrato": "C999",
   "mensagem_inicial": "Minha internet caiu.",
   "trajetoria": [
@@ -26,44 +26,27 @@
       "rota": "suporte"
     },
     {
-      "tipo": "ferramenta",
-      "nome": "testar_linha",
-      "args": {
-        "contrato": "C999"
-      },
-      "resultado": {
-        "erro": "contrato_nao_encontrado",
-        "contrato": "C999"
-      }
-    },
-    {
-      "tipo": "ferramenta",
-      "nome": "conferir_queda_bairro",
-      "args": {
-        "contrato": "C999"
-      },
-      "resultado": {
-        "erro": "contrato_nao_encontrado",
-        "contrato": "C999"
-      }
-    },
-    {
       "tipo": "resposta_final",
-      "conteudo": "O sistema não localizou o contrato C999, então não consegui testar a linha nem o bairro.\n\nPosso tentar de novo, ou prefere que eu encaminhe para um atendente humano?"
+      "conteudo": "Entendi. Para eu te ajudar, me conta:\n\n- O que as luzes do seu roteador estão mostrando?\n- A queda afeta todos os aparelhos da casa ou só um?\n\nCom isso eu sei por onde começar."
     },
     {
       "tipo": "memoria_gravada",
-      "gravou": false,
-      "motivo": "contrato_inexistente"
+      "gravou": true,
+      "resultado": {
+        "episodio": {
+          "chave_idem": "c0fa1e22886ba51a",
+          "ja_existia": false
+        }
+      }
     }
   ],
   "pausas_de_aprovacao": [],
-  "voltas": 2,
-  "tokens": 2781,
-  "segundos_ativos": 22.62,
+  "voltas": 1,
+  "tokens": 1450,
+  "segundos_ativos": 3.36,
   "motivo_parada": "resposta_final",
   "saida": {
-    "resultado": "O sistema não localizou o contrato C999, então não consegui testar a linha nem o bairro.\n\nPosso tentar de novo, ou prefere que eu encaminhe para um atendente humano?",
+    "resultado": "Entendi. Para eu te ajudar, me conta:\n\n- O que as luzes do seu roteador estão mostrando?\n- A queda afeta todos os aparelhos da casa ou só um?\n\nCom isso eu sei por onde começar.",
     "fontes": [],
     "suficiente": false,
     "motivo_insuficiencia": "sem_fonte",

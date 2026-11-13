@@ -7,6 +7,7 @@ import argparse
 import datetime
 import os
 import tempfile
+import time
 
 from src import config, db
 from src.agent import decisor_fixo, executar_atendimento
@@ -31,6 +32,8 @@ CASOS = {
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("casos", nargs="*", choices=sorted(CASOS))
+    p.add_argument("--pausa", type=int, default=0,
+                   help="segundos de espera entre cenários (evita o limite por minuto do provedor)")
     a = p.parse_args()
 
     # Isola os bancos para que a demonstração não apague nem altere dados locais.
@@ -42,7 +45,10 @@ def main():
         config.CAMINHO_CHECKPOINTS = os.path.join(pasta, "checkpoints.db")
         try:
             db.inicializar()
-            for chave in a.casos or CASOS:
+            for i, chave in enumerate(a.casos or CASOS):
+                if i and a.pausa:
+                    print(f"(aguardando {a.pausa}s)")
+                    time.sleep(a.pausa)
                 rotulo_base, contrato, mensagem, (decisao, data) = CASOS[chave]
                 rotulo = f"exec_{carimbo}_{rotulo_base}"
                 print(f"\n### {rotulo_base}")

@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-19T01:42:36",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T20:44:28",
+  "commit": "870ee9c",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C001:fc6b9c98",
+  "thread_id": "C001:038c191c",
   "contrato": "C001",
   "mensagem_inicial": "Quero cancelar meu plano e pedir um desconto.",
   "trajetoria": [
@@ -35,7 +35,7 @@
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "6834c1d95ba7ccd9",
+          "chave_idem": "a580c155c7d79a1d",
           "ja_existia": false
         }
       }

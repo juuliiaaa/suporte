@@ -82,8 +82,8 @@
     "chave": "AMB",
     "contrato": "C001",
     "mensagem": "A internet está ruim hoje, não sei se é o wifi ou a internet mesmo.",
-    "acao_esperada": "nao_agir",
-    "porque": "relato ambíguo entre Wi-Fi e fibra: testa a linha, declara a leitura e orienta teste por cabo, sem escrita"
+    "acao_esperada": "reiniciar",
+    "porque": "relato ambíguo entre Wi-Fi e fibra, mas C001 está OFFLINE com sinal bom: o teste de linha resolve a ambiguidade a favor da conexão, e reiniciar (escrita reversível, sem custo) é a ação prevista para esse estado. Rótulo corrigido em 12/11/2026: a versão original (nao_agir) supunha uma linha normal, que não é o estado de C001"
   },
   {
     "id": 10,

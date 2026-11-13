@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-19T01:38:50",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T20:43:18",
+  "commit": "870ee9c",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C001:c73c6628",
+  "thread_id": "C001:92b1c4de",
   "contrato": "C001",
   "mensagem_inicial": "A luz do modem está piscando vermelha e a internet caiu.",
   "trajetoria": [
@@ -75,18 +75,18 @@
     },
     {
       "tipo": "resposta_final",
-      "conteudo": "Pronto, a linha voltou a ficar ONLINE e o sinal está estável (-22 dBm). A luz vermelha deve apagar em alguns minutos.\n\nSe a internet cair de novo, me avise que eu rodo o teste outra vez."
+      "conteudo": "Reiniciamos a conexão e o teste voltou a mostrar a linha **ONLINE** com sinal bom (-22 dBm).\n\nPode confirmar se a luz do modem voltou ao normal e se a internet voltou a funcionar?"
     },
     {
       "tipo": "memoria_gravada",
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "e904843ae5ca7450",
+          "chave_idem": "0606996698db63fb",
           "ja_existia": false
         },
         "fato": {
-          "chave_idem": "cc7aba6268c0802c",
+          "chave_idem": "ccb0e9accf8bd3cd",
           "ja_existia": false
         }
       }
@@ -94,11 +94,11 @@
   ],
   "pausas_de_aprovacao": [],
   "voltas": 4,
-  "tokens": 6005,
-  "segundos_ativos": 3.5,
+  "tokens": 6417,
+  "segundos_ativos": 3.31,
   "motivo_parada": "resposta_final",
   "saida": {
-    "resultado": "Pronto, a linha voltou a ficar ONLINE e o sinal está estável (-22 dBm). A luz vermelha deve apagar em alguns minutos.\n\nSe a internet cair de novo, me avise que eu rodo o teste outra vez.",
+    "resultado": "Reiniciamos a conexão e o teste voltou a mostrar a linha **ONLINE** com sinal bom (-22 dBm).\n\nPode confirmar se a luz do modem voltou ao normal e se a internet voltou a funcionar?",
     "fontes": [
       {
         "tipo": "ferramenta",

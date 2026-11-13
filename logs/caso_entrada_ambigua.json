@@ -1,29 +1,64 @@
 {
-  "timestamp": "2026-10-19T01:42:36",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T21:23:07",
+  "commit": "2b342bc",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C001:0051a4dd",
+  "thread_id": "C001:a0d3386d",
   "contrato": "C001",
   "mensagem_inicial": "A internet está ruim hoje, não sei se é o wifi ou a internet mesmo.",
   "trajetoria": [
     {
       "tipo": "memoria",
-      "carregada": true
+      "carregada": false
     },
     {
       "tipo": "triagem",
       "rota": "suporte"
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "testar_linha",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "OFFLINE",
+        "sinal_dbm": -22.0,
+        "falha_fisica_provavel": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "conferir_queda_bairro",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "bairro": "Vila Nova",
+        "em_manutencao": false
+      }
+    },
+    {
+      "tipo": "ferramenta",
+      "nome": "reiniciar_conexao",
+      "args": {
+        "contrato": "C001"
+      },
+      "resultado": {
+        "contrato": "C001",
+        "status": "ONLINE"
+      }
     },
     {
       "tipo": "ferramenta",
@@ -40,31 +75,41 @@
     },
     {
       "tipo": "resposta_final",
-      "conteudo": "A linha está online e o sinal está bom (-22 dBm). Então o problema provavelmente é no wifi, não na internet.\n\nPra confirmar, me ajuda com um teste:\n- Conecta um aparelho direto no roteador por cabo de rede (ethernet) e tenta navegar.\n\nSe funcionar pelo cabo, o problema é no wifi. Se não funcionar nem pelo cabo, me avisa que eu confiro se há queda no bairro.\n\nTambém vale tentar reiniciar o roteador (desligar por 10 segundos e ligar de novo).\n\nQuer que eu já reinicie a conexão à distância?"
+      "conteudo": "Pronto! A linha voltou a ficar **ONLINE** (sinal -22 dBm, bom).\n\nResumo do que fiz:\n- Testei a linha: estava OFFLINE, mas com sinal bom (sem falha física).\n- Confirmei que seu bairro (Vila Nova) não está em manutenção.\n- Reiniciei a conexão à distância e testei de novo: agora está ONLINE.\n\nPode testar a navegação. Se a internet cair e voltar de novo, me avise — nesse caso eu rodo o teste mais uma vez para acompanhar. Se o problema for só no Wi-Fi (um aparelho específico), me conta qual é."
     },
     {
       "tipo": "memoria_gravada",
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "c98458ee4df4d07a",
+          "chave_idem": "1e77616605940ee0",
           "ja_existia": false
         },
         "fato": {
-          "chave_idem": "cc7aba6268c0802c",
-          "ja_existia": true
+          "chave_idem": "ccb0e9accf8bd3cd",
+          "ja_existia": false
         }
       }
     }
   ],
   "pausas_de_aprovacao": [],
-  "voltas": 2,
-  "tokens": 3183,
-  "segundos_ativos": 25.57,
+  "voltas": 5,
+  "tokens": 8482,
+  "segundos_ativos": 12.58,
   "motivo_parada": "resposta_final",
   "saida": {
-    "resultado": "A linha está online e o sinal está bom (-22 dBm). Então o problema provavelmente é no wifi, não na internet.\n\nPra confirmar, me ajuda com um teste:\n- Conecta um aparelho direto no roteador por cabo de rede (ethernet) e tenta navegar.\n\nSe funcionar pelo cabo, o problema é no wifi. Se não funcionar nem pelo cabo, me avisa que eu confiro se há queda no bairro.\n\nTambém vale tentar reiniciar o roteador (desligar por 10 segundos e ligar de novo).\n\nQuer que eu já reinicie a conexão à distância?",
+    "resultado": "Pronto! A linha voltou a ficar **ONLINE** (sinal -22 dBm, bom).\n\nResumo do que fiz:\n- Testei a linha: estava OFFLINE, mas com sinal bom (sem falha física).\n- Confirmei que seu bairro (Vila Nova) não está em manutenção.\n- Reiniciei a conexão à distância e testei de novo: agora está ONLINE.\n\nPode testar a navegação. Se a internet cair e voltar de novo, me avise — nesse caso eu rodo o teste mais uma vez para acompanhar. Se o problema for só no Wi-Fi (um aparelho específico), me conta qual é.",
     "fontes": [
+      {
+        "tipo": "ferramenta",
+        "id": "conferir_queda_bairro",
+        "detalhe": null
+      },
+      {
+        "tipo": "ferramenta",
+        "id": "reiniciar_conexao",
+        "detalhe": null
+      },
       {
         "tipo": "ferramenta",
         "id": "testar_linha",

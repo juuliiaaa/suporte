@@ -27,7 +27,7 @@ MAX_VOLTAS_AGENTE = 6          # chamadas ao modelo por atendimento
 MAX_PASSOS_FERRAMENTA = 8      # chamadas de ferramenta por atendimento
 MAX_TESTES_LINHA = 3           # regra do domínio
 TETO_TOKENS = 12000            # tokens acumulados (entrada + saída) por atendimento
-TENTATIVAS_LLM = 3             # tentativas em erro recuperável (limite de taxa, rede, timeout)
+TENTATIVAS_LLM = 5             # tentativas em erro recuperável (limite por minuto, rede, timeout)
 TETO_SEGUNDOS = 120            # tempo de parede do atendimento, sem contar a espera humana
 REPETICOES_PARA_LACO = 3       # mesma ferramenta com os mesmos argumentos N vezes = laço
 

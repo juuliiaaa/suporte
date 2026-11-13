@@ -63,3 +63,9 @@ def test_banco_antigo_e_migrado(tmp_path, monkeypatch):
     c = db.conectar()
     assert c.execute("SELECT chave FROM visitas").fetchone()[0] == db.chave_visita("C001", "2026-10-19")
     c.close()
+
+def test_reiniciar_recusa_linha_ja_online():
+    """C002 está ONLINE com sinal bom: reiniciar não corrige nada."""
+    assert tools.reiniciar_conexao("C002")["erro"] == "linha_ja_online_reinicio_desnecessario"
+    assert tools.reiniciar_conexao("C001")["status"] == "ONLINE"          # estava OFFLINE: reinicia
+    assert tools.reiniciar_conexao("C001")["erro"] == "linha_ja_online_reinicio_desnecessario"  # não repete

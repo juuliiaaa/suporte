@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-19T01:42:10",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T20:44:14",
+  "commit": "870ee9c",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C001:f8c14d80",
+  "thread_id": "C001:3f365c9e",
   "contrato": "C001",
   "mensagem_inicial": "não funciona",
   "trajetoria": [
@@ -31,7 +31,7 @@
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "039af71ea17a5820",
+          "chave_idem": "a0a602b65c41b516",
           "ja_existia": false
         }
       }

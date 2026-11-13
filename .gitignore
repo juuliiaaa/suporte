@@ -14,3 +14,7 @@ dados/*.db
 # Arquivos temporÃ¡rios/backup; logs de demonstraÃ§Ã£o em logs/ sÃ£o versionados
 logs_bkp/
 *.tmp
+
+# Execuções avulsas de rodar_casos e cópias de trabalho
+logs/exec_*.json
+logs_teste/

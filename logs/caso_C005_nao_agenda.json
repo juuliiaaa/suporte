@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-19T01:40:02",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T21:21:55",
+  "commit": "2b342bc",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C005:2d48a346",
+  "thread_id": "C005:ca375404",
   "contrato": "C005",
   "mensagem_inicial": "Estou sem internet, quero que mandem um técnico hoje.",
   "trajetoria": [
@@ -51,18 +51,18 @@
     },
     {
       "tipo": "resposta_final",
-      "conteudo": "Sua linha está offline, mas o sinal está bom (-19 dBm), então não é falha física. O problema é que o seu bairro, Jardim Ipê, está em manutenção geral de rede.\n\nComo a equipe de rede já está atuando na região, não consigo agendar uma visita técnica individual. A manutenção deve resolver a queda para todos os clientes do bairro.\n\nPosso ajudar com mais alguma coisa?"
+      "conteudo": "Sua linha está **OFFLINE**, mas o sinal está bom (-19 dBm), então não é falha física. O problema é que o seu bairro, **Jardim Ipê**, está em manutenção geral de rede.\n\nComo a equipe de rede já está atuando na região, não consigo agendar uma visita técnica individual. A manutenção deve resolver o problema para todos os clientes da área.\n\nSe a internet não voltar após a manutenção, me avise que a gente vê o que fazer."
     },
     {
       "tipo": "memoria_gravada",
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "4cb9aa1baad88964",
+          "chave_idem": "b5232ff5b6f4a222",
           "ja_existia": false
         },
         "fato": {
-          "chave_idem": "7db6b3dc54a4a734",
+          "chave_idem": "5abd17e9be26a9f3",
           "ja_existia": false
         }
       }
@@ -70,11 +70,11 @@
   ],
   "pausas_de_aprovacao": [],
   "voltas": 2,
-  "tokens": 2850,
-  "segundos_ativos": 23.1,
+  "tokens": 3121,
+  "segundos_ativos": 3.18,
   "motivo_parada": "resposta_final",
   "saida": {
-    "resultado": "Sua linha está offline, mas o sinal está bom (-19 dBm), então não é falha física. O problema é que o seu bairro, Jardim Ipê, está em manutenção geral de rede.\n\nComo a equipe de rede já está atuando na região, não consigo agendar uma visita técnica individual. A manutenção deve resolver a queda para todos os clientes do bairro.\n\nPosso ajudar com mais alguma coisa?",
+    "resultado": "Sua linha está **OFFLINE**, mas o sinal está bom (-19 dBm), então não é falha física. O problema é que o seu bairro, **Jardim Ipê**, está em manutenção geral de rede.\n\nComo a equipe de rede já está atuando na região, não consigo agendar uma visita técnica individual. A manutenção deve resolver o problema para todos os clientes da área.\n\nSe a internet não voltar após a manutenção, me avise que a gente vê o que fazer.",
     "fontes": [
       {
         "tipo": "ferramenta",

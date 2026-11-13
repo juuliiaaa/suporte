@@ -101,7 +101,7 @@ Saída completa validada:
 
 ```json
 {
-  "resultado": "Pronto, a linha voltou a ficar ONLINE e o sinal está estável (-22 dBm). A luz vermelha deve apagar em alguns minutos.\n\nSe a internet cair de novo, me avise que eu rodo o teste outra vez.",
+  "resultado": "Reiniciamos a conexão e o teste voltou a mostrar a linha **ONLINE** com sinal bom (-22 dBm).\n\nPode confirmar se a luz do modem voltou ao normal e se a internet voltou a funcionar?",
   "fontes": [
     {
       "tipo": "ferramenta",
@@ -127,7 +127,7 @@ Saída completa validada:
 }
 ```
 
-Execução registrada em `2026-10-19T01:38:50`, commit `8b9fd3d`.
+Execução registrada em `2026-11-12T20:43:18`, commit `870ee9c`.
 <!-- EXEMPLO:FIM -->
 
 **O que o sistema não faz:** não responde sobre cobrança, fatura ou

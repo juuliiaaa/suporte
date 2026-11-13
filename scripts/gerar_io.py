@@ -45,7 +45,8 @@ def _consultas(log: dict) -> tuple[int, int]:
 
 
 def gerar_documentacao() -> tuple[int, str]:
-    arquivos = sorted(glob.glob(str(PASTA_LOGS / "*.json")))
+    # exec_* são execuções avulsas de rodar_casos; só os logs promovidos (caso_*) entram aqui
+    arquivos = [c for c in sorted(glob.glob(str(PASTA_LOGS / "*.json"))) if not os.path.basename(c).startswith("exec_")]
     linhas = [
         "# Entrada e saída do sistema", "",
         "Os exemplos abaixo foram extraídos dos arquivos JSON em `logs/`; nenhuma entrada ou saída foi reconstruída à mão.",

@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-19T01:42:10",
-  "commit": "8b9fd3d",
+  "timestamp": "2026-11-12T21:20:51",
+  "commit": "2b342bc",
   "modelo": "qwen/qwen3.8-27b",
   "temperature": 0.2,
   "prompts": {
     "sistema": {
       "arquivo": "suporte_v2.md",
-      "sha256": "8ff597289d95"
+      "sha256": "846930f9bbfe"
     },
     "procedural": {
       "arquivo": "procedural.md",
       "sha256": "5ecc9d266e5f"
     }
   },
-  "thread_id": "C004:23eb916f",
+  "thread_id": "C004:d658c5c8",
   "contrato": "C004",
   "mensagem_inicial": "Sem internet nenhuma, a luz está vermelha.",
   "trajetoria": [
@@ -40,63 +40,52 @@
     },
     {
       "tipo": "ferramenta",
-      "nome": "conferir_queda_bairro",
-      "args": {
-        "contrato": "C004"
-      },
-      "resultado": {
-        "bairro": "Vila Nova",
-        "em_manutencao": false
-      }
-    },
-    {
-      "tipo": "ferramenta",
       "nome": "obter_data_atual",
       "args": {},
       "resultado": {
-        "hoje": "2026-10-19",
-        "amanha": "2026-10-20"
+        "hoje": "2026-11-12",
+        "amanha": "2026-11-13"
       }
     },
     {
       "tipo": "ferramenta",
       "nome": "propor_visita",
       "args": {
-        "data": "2026-10-20"
+        "data": "2026-11-13"
       },
       "resultado": {
         "proposta": true,
         "contrato": "C004",
-        "data": "2026-10-20"
+        "data": "2026-11-13"
       }
     },
     {
       "tipo": "aprovacao_humana",
       "decisao": "editar",
-      "data_proposta": "2026-10-20",
-      "data_final": "2026-10-22",
+      "data_proposta": "2026-11-13",
+      "data_final": "2026-11-15",
       "motivo": null,
       "resultado": {
         "contrato": "C004",
-        "data": "2026-10-22",
+        "data": "2026-11-15",
         "status": "AGENDADA",
         "ja_existia": true
       }
     },
     {
       "tipo": "resposta_final",
-      "conteudo": "A visita técnica foi agendada para **22/10/2026**. Um técnico irá até o seu endereço para verificar a falha física na linha."
+      "conteudo": "A visita técnica foi **agendada para 15/11/2026**. O técnico vai até você para verificar o cabo e a instalação.\n\nSe o problema voltar antes disso, me avise."
     },
     {
       "tipo": "memoria_gravada",
       "gravou": true,
       "resultado": {
         "episodio": {
-          "chave_idem": "59728a4a86f415e7",
+          "chave_idem": "4e9929fbe4fc9a64",
           "ja_existia": true
         },
         "fato": {
-          "chave_idem": "09481c1a0e721f15",
+          "chave_idem": "4e651ab4908ffd9b",
           "ja_existia": true
         }
       }
@@ -107,7 +96,7 @@
       "payload": {
         "acao": "agendar_visita_tecnico",
         "contrato": "C004",
-        "data_proposta": "2026-10-20",
+        "data_proposta": "2026-11-13",
         "consequencia": "desloca um técnico até a casa do cliente; tem custo e não é desfeito sozinho",
         "opcoes": [
           "aprovar",
@@ -115,29 +104,24 @@
           "editar"
         ],
         "janela_edicao": [
-          "2026-10-19",
-          "2026-11-02"
+          "2026-11-12",
+          "2026-11-26"
         ],
         "prazo_segundos": 900
       },
       "resposta": {
         "decisao": "editar",
-        "data": "2026-10-22"
+        "data": "2026-11-15"
       }
     }
   ],
   "voltas": 4,
-  "tokens": 6498,
-  "segundos_ativos": 53.85,
+  "tokens": 6870,
+  "segundos_ativos": 4.46,
   "motivo_parada": "resposta_final",
   "saida": {
-    "resultado": "A visita técnica foi agendada para **22/10/2026**. Um técnico irá até o seu endereço para verificar a falha física na linha.",
+    "resultado": "A visita técnica foi **agendada para 15/11/2026**. O técnico vai até você para verificar o cabo e a instalação.\n\nSe o problema voltar antes disso, me avise.",
     "fontes": [
-      {
-        "tipo": "ferramenta",
-        "id": "conferir_queda_bairro",
-        "detalhe": null
-      },
       {
         "tipo": "ferramenta",
         "id": "obter_data_atual",

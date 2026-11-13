@@ -62,7 +62,9 @@ def conferir_queda_bairro(contrato: str) -> dict:
 
 def reiniciar_conexao(contrato: str) -> dict:
     """Escrita reversível. O limite de 3 por atendimento é controlado pelo
-    laço do agente (estado da conversa), não aqui."""
+    laço do agente (estado da conversa), não aqui. Recusa, como dado, quando
+    a linha já está ONLINE: não há o que reiniciar, e o relato do cliente
+    contra um teste normal é caso de orientar teste local, não de escrita."""
     conn = db.conectar()
     row = conn.execute(
         "SELECT * FROM modems WHERE contrato = ?", (contrato,)
@@ -76,6 +78,9 @@ def reiniciar_conexao(contrato: str) -> dict:
             "erro": "falha_fisica_reinicio_nao_resolve",
             "sinal_dbm": row["sinal_dbm"],
         }
+    if row["status"] == "ONLINE":
+        conn.close()
+        return {"erro": "linha_ja_online_reinicio_desnecessario", "contrato": contrato}
     conn.execute(
         "UPDATE modems SET status = 'ONLINE', reinicios_hoje = reinicios_hoje + 1 "
         "WHERE contrato = ?",
